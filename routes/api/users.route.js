@@ -2,15 +2,12 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/users.controller");
 const authMiddleware = require("../../middleware/auth");
-const upload = require("../../middleware/upload-images")
-
-
+const upload = require("../../middleware/upload-images");
 
 //Get list user, access: public
 router.get("/", userController.index);
 //Find User by Id, access: public
-router.get('/:id', userController.userInformation);
-
+router.get("/:userId", userController.userInformation);
 
 router.post("/register", userController.register);
 router.post("/login", userController.login);
@@ -21,8 +18,17 @@ router.post(
   upload.single("avatar"),
   userController.uploadAvatar
 );
-router.put("/update", authMiddleware.authentication ,userController.editInformation)
-router.post('/deactive', authMiddleware.authentication,userController.deactiveAccount)
-
-
+router.put(
+  "/update",
+  authMiddleware.authentication,
+  userController.editInformation
+);
+router.post(
+  "/deactive",
+  authMiddleware.authentication,
+  userController.deactiveAccount
+);
+//Become a driver
+router.post("/becomeDriver", authMiddleware.authentication,userController.becomeDriver);
+//authMiddleware.isDriver,
 module.exports = router;

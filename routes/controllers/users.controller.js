@@ -3,83 +3,110 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
+//const validator
+const validate = require("../../validation/validate-register");
+
 //load model
 const { User } = require("../../models/user.model");
-
+const { Driver } = require("../../models/driver.model");
 //========= =========
 //List User access: public
 module.exports.index = (req, res) => {
   User.find()
-    .select({ fullName: 1, userType: 1, registerDate: 1, numberOfTrips: 1 })
+    .select("-_id")
     .then(user => res.status(200).json(user))
-    .catch(console.log);
+    .catch(err => res.status(400).json(err));
   //   res.json("Day la GET request o router api/users/");
 };
 //Find User By Id
-module.exports.userInformation = async (req, res) => {
-  await User.findById(req.path.split(":")[1]);
-  if (!user) return res.status(400).json({ error: "User does not exists" });
-  res.status(200).json(user);
-};
-
-//User register
-module.exports.register = (req, res) => {
-  const { email, passWord, fullName, phone, DOB } = req.body;
-  User.findOne({ $or: [{ email }, { phone }] })
+module.exports.userInformation = (req, res) => {
+  User.findById(req.params.userId)
     .then(user => {
-      if (user) return res.status(400).json({ error: "Email or Phone exists" });
-      const newUser = new User({
-        email,
-        passWord,
-        fullName,
-        phone,
-        DOB
-      });
-      bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(newUser.passWord, salt, function(err, hash) {
-          // Store hash in your password DB.
-          if (err) throw err;
-          newUser.passWord = hash;
-          newUser
-            .save()
-            .then(user => res.status(200).json(user))
-            .catch(console.log);
-        });
-      });
+      if (!user) return res.status(400).json({ error: "User does not exists" });
+      return res.status(200).json(user);
     })
-    .catch(console.log);
+    .catch(err => res.status(400).json(err));
+};
+//User register
+module.exports.register = async (req, res) => {
+  const { email, passWord, fullName, phone, DOB } = req.body;
+  const { isValid, errors } = await validate.validateRegisterInput(req.body);
+  if (!isValid) return res.status(400).json({ errors: errors });
+  try {
+    const newUser = new User({
+      email,
+      passWord,
+      fullName,
+      phone,
+      DOB
+    });
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(newUser.passWord, salt, function(err, hash) {
+        // Store hash in your password DB.
+        if (err) throw err;
+        newUser.passWord = hash;
+        newUser
+          .save()
+          .then(user => res.status(200).json(user))
+          .catch(err => res.status(400).json(err));
+      });
+    });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 ///User login
-module.exports.login = (req, res) => {
-  const { email, passWord } = req.body;
-  User.findOne({ email }).then(user => {
-    if (!user) return res.status(400).json({ error: "Email does not exists" });
+module.exports.login = async (req, res) => {
+  try {
+    const { email, passWord, fingerprint } = req.body;
+    const { isValid, errors } = await validate.validateLoginInput(req.body);
+    if (!isValid) return res.status(400).json({ errors: errors });
 
-    bcrypt
-      .compare(passWord, user.passWord)
-      .then(isMatch => {
-        if (!isMatch)
-          return res.status(400).json({ error: "Password was wrong" });
-        const payload = {
-          id: user._id,
-          email: user.email,
-          fullName: user.fullName,
-          userType: user.userType,
-          DOB: user.DOB,
-          phone: user.phone
-        };
-        const secretKey = process.env.SECRET_KEY;
-        jwt.sign({ payload }, secretKey, function(err, token) {
-          if (err) return res.status(400).json({ error: err });
-          return res.status(200).json({ token, msg: "Login success" });
-        });
-      })
+    const payload = {
+      id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      userType: user.userType,
+      DOB: user.DOB,
+      phone: user.phone,
+      isOnTheTrip: user.isOnTheTrip
+    };
+    const secretKey = process.env.SECRET_KEY + fingerprint;
+    await jwt
+      .sign({ payload }, secretKey, { expiresIn: "2h" })
+      .then(token => res.status(200).json(token))
       .catch(err => res.status(400).json(err));
-  });
+
+    // const isMatch = bcrypt.compare(passWord, user.passWord);
+    // if (!isMatch) return res.status(400).json({ error: "Password was wrong" });
+  } catch (error) {
+    res.status(400).json({ errors: error });
+  }
+  // bcrypt
+  //   .compare(passWord, user.passWord)
+  //   .then(isMatch => {
+  //     if (!isMatch)
+  //       return res.status(400).json({ error: "Password was wrong" });
+  //     const payload = {
+  //       id: user._id,
+  //       email: user.email,
+  //       fullName: user.fullName,
+  //       userType: user.userType,
+  //       DOB: user.DOB,
+  //       phone: user.phone,
+  //       isOnTheTrip: user.onTheTrip
+  //     };
+  //     console.log(fingerprint, "finger")
+  //     const secretKey = process.env.SECRET_KEY + fingerprint;
+  //     jwt.sign({ payload }, secretKey, {expiresIn: '2h'}, function(err, token) {
+  //       if (err) return res.status(400).json({ error: err });
+  //       return res.status(200).json({ token, msg: "Login success" });
+  //     });
+  //   })
+  //   .catch(err => res.status(400).json(err));
 };
 //User upload-avatar
 module.exports.uploadAvatar = (req, res) => {
-  console.log(req.user.payload.id);
   User.findById(req.user.payload.id)
     .then(user => {
       if (!user) return res.status(400).json({ errors: "User doesnt exists" });
@@ -87,7 +114,7 @@ module.exports.uploadAvatar = (req, res) => {
       return user.save();
     })
     .then(user => res.status(200).json(user))
-    .catch(console.log);
+    .catch(err => res.status(400).json(err));
 };
 
 //User edit information
@@ -108,19 +135,54 @@ module.exports.editInformation = (req, res) => {
           user
             .save()
             .then(user => res.status(200).json(user))
-            .catch(console.log);
+            .catch(err => res.status(400).json(err));
         });
       });
     })
-    .catch(console.log);
+    .catch(err => res.status(400).json(err));
 };
 //User deactive their account
 module.exports.deactiveAccount = (req, res) => {
   User.findByIdAndDelete({ _id: req.user.payload.id })
     .then(user => {
       if (!user) return Promise.reject({ errors: "User does not exists" });
+      return user.userType.map(u => {
+        if (u.length > 1) {
+          Driver.findOneAndDelete({ userId: user._id })
+            .then(driver => res.status(200).json(`Da xoa ${driver}`))
+            .catch(err => res.status(400).json(err));
+          return res.status(200).json(`Da xoa ${user}`);
+        } else {
+          return res.status(200).json(user);
+        }
+      });
+    })
+    .catch(err => res.status(400).json(err));
+};
 
-      return res.status(200).json(`Da xoa ${user}`);
+//Become a driver
+module.exports.becomeDriver = (req, res) => {
+  console.log(JSON.stringify(req.user.payload.userType));
+  User.findById(req.user.payload.id)
+    .then(user => {
+      if (!user) return Promise.reject({ errors: " User does not exists" });
+      let isAccess = Boolean;
+      user.userType.map(u => {
+        if (u.indexOf("driver") === -1) {
+          isAccess = true;
+        } else {
+          isAccess = false;
+        }
+      });
+      if (isAccess === true) {
+        user.userType.push("driver");
+        return user
+          .save()
+          .then(user => res.status(200).json(user))
+          .catch(err => res.status(400).json(err));
+      } else {
+        return res.status(400).json({ errors: "User was driver" });
+      }
     })
     .catch(err => res.status(400).json(err));
 };

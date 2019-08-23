@@ -1,16 +1,24 @@
 const mongoose = require('mongoose');
 
 const TripSchema = new mongoose.Schema({
-    driverId: {type: String},
+    driverId: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Driver',
+        required: true
+    }],
     locationFrom: String,
     locationTo: String,
-    startTime: {type: Date, default: new Date().getTime()},
+    startTime: {type: Date, required: true},
     availableSeats: Number,
     fee: Number,
-    isFinished: Boolean
+    isFinished: Boolean,
+    passenger: [{
+        passengerId: {type: mongoose.Schema.Types.ObjectId, ref:"User", require: true},
+        numberOfBookingSeats: {type: Number, required: true}
+    }]
 })
 
-const Trip = mongoose.model('Trip', UserSchema, 'trips');
+const Trip = mongoose.model('Trip', TripSchema, 'trips');
 module.exports = {
     Trip, TripSchema
 }

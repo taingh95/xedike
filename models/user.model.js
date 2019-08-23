@@ -10,8 +10,8 @@ const UserSchema = new mongoose.Schema({
     registerDate: {type: Date, default: new Date().getTime()},
     numberOfTrips: {type: Number, default: 0},
     avatar: {type: String},
-    isActive: {type: Boolean, default: true},
-    history: []
+    history: [],
+    onTheTrip : {type: Boolean, default: false}
 })
 
 const User = mongoose.model('User', UserSchema, 'users');
