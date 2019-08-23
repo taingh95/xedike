@@ -56,54 +56,40 @@ module.exports.register = async (req, res) => {
   }
 };
 ///User login
-module.exports.login = async (req, res) => {
-  try {
-    const { email, passWord, fingerprint } = req.body;
-    const { isValid, errors } = await validate.validateLoginInput(req.body);
-    if (!isValid) return res.status(400).json({ errors: errors });
-
-    const payload = {
-      id: user._id,
-      email: user.email,
-      fullName: user.fullName,
-      userType: user.userType,
-      DOB: user.DOB,
-      phone: user.phone,
-      isOnTheTrip: user.isOnTheTrip
-    };
-    const secretKey = process.env.SECRET_KEY + fingerprint;
-    await jwt
-      .sign({ payload }, secretKey, { expiresIn: "2h" })
-      .then(token => res.status(200).json(token))
-      .catch(err => res.status(400).json(err));
-
-    // const isMatch = bcrypt.compare(passWord, user.passWord);
-    // if (!isMatch) return res.status(400).json({ error: "Password was wrong" });
-  } catch (error) {
-    res.status(400).json({ errors: error });
-  }
-  // bcrypt
-  //   .compare(passWord, user.passWord)
-  //   .then(isMatch => {
-  //     if (!isMatch)
-  //       return res.status(400).json({ error: "Password was wrong" });
-  //     const payload = {
-  //       id: user._id,
-  //       email: user.email,
-  //       fullName: user.fullName,
-  //       userType: user.userType,
-  //       DOB: user.DOB,
-  //       phone: user.phone,
-  //       isOnTheTrip: user.onTheTrip
-  //     };
-  //     console.log(fingerprint, "finger")
-  //     const secretKey = process.env.SECRET_KEY + fingerprint;
-  //     jwt.sign({ payload }, secretKey, {expiresIn: '2h'}, function(err, token) {
-  //       if (err) return res.status(400).json({ error: err });
-  //       return res.status(200).json({ token, msg: "Login success" });
-  //     });
-  //   })
-  //   .catch(err => res.status(400).json(err));
+module.exports.login =  (req, res) => {
+  const { email, passWord, fingerprint } = req.body;
+  User.findOne({ email: email })
+    .then(user => {
+      const isMatch = bcrypt.compare(passWord, user.passWord);
+      if (!isMatch)
+        return res.status(400).json({ error: "Password was wrong" });
+      bcrypt
+        .compare(passWord, user.passWord)
+        .then(isMatch => {
+          if (!isMatch)
+            return res.status(400).json({ error: "Password was wrong" });
+          const payload = {
+            id: user._id,
+            email: user.email,
+            fullName: user.fullName,
+            userType: user.userType,
+            DOB: user.DOB,
+            phone: user.phone,
+            isOnTheTrip: user.onTheTrip
+          };
+          console.log(fingerprint, "finger");
+          const secretKey = process.env.SECRET_KEY + fingerprint;
+          jwt.sign({ payload }, secretKey, { expiresIn: "2h" }, function(
+            err,
+            token
+          ) {
+            if (err) return res.status(400).json({ error: err });
+            return res.status(200).json({ token, msg: "Login success" });
+          });
+        })
+        .catch(err => res.status(400).json(err));
+    })
+    .catch(err => res.status(400).json(err));
 };
 //User upload-avatar
 module.exports.uploadAvatar = (req, res) => {
