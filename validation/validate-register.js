@@ -41,9 +41,7 @@ module.exports.validateRegisterInput = async (data) => {
     //validator fullName
     if(validator.isEmpty(data.fullName)) {
         errors.fullName = "Full name field is required"
-    } else if(!validator.isAlpha(data.fullName)) {
-        errors.fullName = "Full name is only alphabetic character"
-    }
+    } 
     //validator DOB
     if(validator.isEmpty(data.DOB)) {
         errors.DOB = "Day of birth is required"

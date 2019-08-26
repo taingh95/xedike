@@ -1,30 +1,36 @@
 import React, { useState } from "react";
-import Axios from "axios";
-import {
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Col
-} from "reactstrap";
+import axios from "axios";
+import { Form, FormGroup, Label, Input, Button, Col } from "reactstrap";
+import { useSelector} from 'react-redux'
 
-export default function Register() {
-    const initialState = {
-        email: "",
-        fullName: "",
-        passWord: "",
-        passWord2: "",
-        phone: "",
-        DOB: ""
-      };
-    const [user, setUser] = useState(initialState);
-    const handleOnSubmit = (event) => {
-        event.preventDefault();
-        Axios.post("localhost:8080/api/users/register", user)
-              .then(res => console.log(res, "res"))
-              .catch(err => console.log(err));
-    }
+
+export default function Register(props) {
+  const initialState = {
+    email: "",
+    fullName: "",
+    passWord: "",
+    passWord2: "",
+    phone: "",
+    DOB: ""
+  };
+  const [user, setUser] = useState(initialState);
+  const [errors, setErrors] = useState([]);
+  const handleOnSubmit = event => {
+    event.preventDefault();
+    axios
+      .post("http://localhost:8080/api/users/register", user)
+      .then(res => {
+        console.log(res);
+        setErrors({});
+        setUser(initialState)
+        props.history.push("/login")
+      })
+      .catch(err => setErrors(err.response.data.errors));
+  };
+  const handleOnChange = event => {
+    event.preventDefault();
+    setUser({...user, [event.target.name] : event.target.value})
+  }
   return (
     <div
       className="d-flex justify-content-center align-items-center"
@@ -51,7 +57,10 @@ export default function Register() {
               type="email"
               name="email"
               placeholder="Enter your email"
+              value={user.email}
+              onChange={handleOnChange}
             />
+            { errors.email &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.email}</span>}
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -64,7 +73,10 @@ export default function Register() {
               type="text"
               name="fullName"
               placeholder="Enter your full name"
+              value={user.fullName}
+              onChange={handleOnChange}
             />
+            { errors.fullName &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.fullName}</span>}
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -77,7 +89,10 @@ export default function Register() {
               type="password"
               name="passWord"
               placeholder="Enter your password"
+              value={user.passWord}
+              onChange={handleOnChange}
             />
+            { errors.passWord &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.passWord}</span>}
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -89,8 +104,11 @@ export default function Register() {
               id="confirmPassword"
               type="password"
               name="passWord2"
-              placeholder="Enter your password"
+              placeholder="Confirm your password"
+              value={user.passWord2}
+              onChange={handleOnChange}
             />
+            { errors.passWord2 &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.passWord2}</span>}
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -103,7 +121,10 @@ export default function Register() {
               type="text"
               name="phone"
               placeholder="Enter your phone number"
+              value={user.phone}
+              onChange={handleOnChange}
             />
+            { errors.phone &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.phone}</span>}
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -111,10 +132,10 @@ export default function Register() {
             Your birthday
           </Label>
           <Col sm={9}>
-            <Input id="DOB" type="date" name="DOB"  />
+            <Input id="DOB" type="date" name="DOB" value={user.DOB} onChange={handleOnChange}/>
+            { errors.DOB &&  <span className="text-danger mt-2 ml-2 font-weight-light">{errors.DOB}</span>}
           </Col>
         </FormGroup>
-
         <FormGroup check row>
           <Button type="submit" block color="success">
             Đăng Ký

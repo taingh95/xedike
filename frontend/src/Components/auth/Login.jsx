@@ -4,7 +4,6 @@ import {
   FormGroup,
   Label,
   Input,
-  FormFeedback,
   FormText,
   Button
 } from "reactstrap";
@@ -28,15 +27,11 @@ export default function Login() {
         <FormGroup>
           <Label for="loginEmail">Email</Label>
           <Input id="loginEmail" type="email" placeholder="Enter email" />
-          <FormFeedback invalid>
-            Email is invalid! Email has type example@mail.com
-          </FormFeedback>
           <FormText>Email has type example@mail.com</FormText>
         </FormGroup>
         <FormGroup>
           <Label for="loginPassword">Password</Label>
           <Input id="loginPassword"  type="password" placeholder="Enter your password" />
-          <FormFeedback invalid>Password or Email is invalid</FormFeedback>
           <FormText>
             Password have least 6 charracter and max 30 charracter
           </FormText>

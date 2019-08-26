@@ -6,77 +6,16 @@ class TripLists extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [
-        {
-          locationFrom: "Hà Nội",
-          locationTo: "Huế",
-          availableSeats: 4,
-          fee: 50000,
-          startTime: "23/8/2019",
-          driverName: "Nguyễn Tấn"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Nha Trang",
-          availableSeats: 2,
-          fee: 10000,
-          startTime: "11/8/2019",
-          driverName: "Nguyễn Gà"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        },
-        {
-          locationFrom: "Sài Gòn",
-          locationTo: "Vũng Tàu",
-          availableSeats: 6,
-          fee: 80000,
-          startTime: "29/8/2019",
-          driverName: "Nguyễn Oanh"
-        }
-      ]
+      data: []
     };
   }
   componentDidMount() {
-    Axios.get("localhost:8080/api/trips")
-      .then(res => console.log(res))
+    Axios.get("http://localhost:8080/api/trips")
+      .then(res => {
+        this.setState({
+          data: res.data
+        })
+      })
       .catch(err => console.log(err));
   }
   render() {

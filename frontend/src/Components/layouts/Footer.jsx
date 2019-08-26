@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+
 
 export default function Footer() {
   const styles = {
@@ -37,6 +37,7 @@ export default function Footer() {
             <img
               style={{ width: "1.2rem", position: "absolute" }}
               src="./images/icons/phone.png"
+              alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
               Hỗ trợ hành khách: 0905 93 34 53{" "}
@@ -46,6 +47,7 @@ export default function Footer() {
             <img
               style={{ width: "1.2rem", position: "absolute" }}
               src="./images/icons/phone.png"
+              alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
               Hỗ trợ tài xế: 0905 93 34 53{" "}
@@ -55,6 +57,7 @@ export default function Footer() {
             <img
               style={{ width: "1.2rem", position: "absolute" }}
               src="./images/icons/Mail.png"
+              alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
               Email: cs@xedike.vn{" "}
