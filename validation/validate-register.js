@@ -46,7 +46,7 @@ module.exports.validateRegisterInput = async (data) => {
     if(validator.isEmpty(data.DOB)) {
         errors.DOB = "Day of birth is required"
     } else if(!validator.isISO8601(data.DOB)) {
-        errors.DOB = "Dat of birth type is YYYY/MM/DD"
+        errors.DOB = "Date of birth type is YYYY-MM-DD"
     }
 
     return {

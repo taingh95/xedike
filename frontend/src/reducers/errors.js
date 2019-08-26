@@ -1,12 +1,11 @@
-import GET_ERRORS from '../actions/constants/authType'
+import {GET_ERRORS} from '../actions/constants/authType'
 
 const initialState = {}
 
 const errorsReducer = (state = initialState, action) => {
     switch (action.type) {
         case GET_ERRORS:
-            return action.payload
-    
+            return action.payload;
         default:
             return state
     }

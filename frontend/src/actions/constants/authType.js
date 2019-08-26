@@ -1,6 +1,9 @@
-const GET_ERRORS = "GET_ERRORS";
+export const GET_ERRORS = "GET_ERRORS";
+export const GET_PROFILE = 'GET_PROFILE';
+export const GET_PROFILE_NOT_FOUND = 'GET_PROFILE_NOT_FOUND';
+export const CLEAR_CURRENT_PROFILE = 'CLEAR_CURRENT_PROFILE';
+export const SET_CURRENT_USER = 'SET_CURRENT_USER';
+export const GET_PROFILES = 'GET_PROFILES';
+export const PROFILE_LOADING = 'PROFILE_LOADING';
+export const GET_DRIVER_PROFILE = 'GET_DRIVER_PROFILE'
 
-
-export default {
-    GET_ERRORS
-}

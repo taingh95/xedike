@@ -4,6 +4,9 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+//css
+import "react-toastify/dist/ReactToastify.css";
+
 //redux
 import { Provider } from "react-redux";
 import store from "./store";
