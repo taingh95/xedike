@@ -56,38 +56,32 @@ module.exports.register = async (req, res) => {
   }
 };
 ///User login
-module.exports.login =  (req, res) => {
-  const { email, passWord, fingerprint } = req.body;
+module.exports.login = (req, res) => {
+  const { email, passWord } = req.body;
+  const {errors, isValid} = validate.validateLoginInput({email, passWord})
+  if(!isValid) return res.status(400).json({errors})
   User.findOne({ email: email })
     .then(user => {
-      const isMatch = bcrypt.compare(passWord, user.passWord);
-      if (!isMatch)
-        return res.status(400).json({ error: "Password was wrong" });
-      bcrypt
-        .compare(passWord, user.passWord)
-        .then(isMatch => {
-          if (!isMatch)
-            return res.status(400).json({ error: "Password was wrong" });
-          const payload = {
-            id: user._id,
-            email: user.email,
-            fullName: user.fullName,
-            userType: user.userType,
-            DOB: user.DOB,
-            phone: user.phone,
-            isOnTheTrip: user.onTheTrip
-          };
-          console.log(fingerprint, "finger");
-          const secretKey = process.env.SECRET_KEY + fingerprint;
-          jwt.sign({ payload }, secretKey, { expiresIn: "2h" }, function(
-            err,
-            token
-          ) {
-            if (err) return res.status(400).json({ error: err });
-            return res.status(200).json({ token, msg: "Login success" });
-          });
-        })
-        .catch(err => res.status(400).json(err));
+      if (!user) return res.status(400).json({ error: "User does not exists" });
+
+      bcrypt.compare(passWord, user.passWord, (err, isMatch) => {
+        if (!isMatch)
+          return res.status(400).json({ error: "Password incorrect" });
+        const payload = {
+          id: user._id,
+          email: user.email,
+          fullName: user.fullName,
+          userType: user.userType,
+          DOB: user.DOB,
+          phone: user.phone,
+          isOnTheTrip: user.onTheTrip
+        };
+        const secretKey = process.env.SECRET_KEY ;
+        jwt.sign({ payload }, secretKey, { expiresIn: "2h" }, (err, token) => {
+          if (err) return res.status(400).json({ error: err });
+          res.status(200).json({ token: token, msg: "Login success" });
+        });
+      });
     })
     .catch(err => res.status(400).json(err));
 };

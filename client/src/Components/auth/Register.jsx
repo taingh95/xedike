@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Form, FormGroup, Label, Input, Button, Col } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 
-
 //action
 import { register } from "../../actions/auth";
 
@@ -19,7 +18,7 @@ class Register extends Component {
       DOB: ""
     };
   }
-  
+
   handleOnSubmit = event => {
     event.preventDefault();
     this.props.registerAction(this.state, this.props.history);
@@ -29,12 +28,19 @@ class Register extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
   render() {
-    const {email, fullName, passWord, passWord2, phone, DOB} = this.props.errors
+    const {
+      email,
+      fullName,
+      passWord,
+      passWord2,
+      phone,
+      DOB
+    } = this.props.errors;
     const styles = {
-      toastStyle : {
+      toastStyle: {
         backgroundColor: "#095221"
       }
-    }
+    };
     return (
       <div
         className="d-flex justify-content-center align-items-center"
@@ -179,17 +185,17 @@ class Register extends Component {
             </Button>
           </FormGroup>
         </Form>
-        <ToastContainer autoClose={1500} style={styles.toastStyle}/>
+        <ToastContainer autoClose={1500} style={styles.toastStyle} />
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {errors: state.errors}
-}
+const mapStateToProps = state => {
+  return { errors: state.errors };
+};
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     registerAction: (user, history) => dispatch(register(user, history))
   };

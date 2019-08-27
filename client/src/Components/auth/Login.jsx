@@ -11,13 +11,14 @@ class Login extends Component {
       passWord: ""
     };
   }
-  handleOnSubmit = e => {
-    e.preventDefault();
+  handleOnSubmit = event => {
+    event.preventDefault();
     this.props.loginAction(this.state, this.props.history);
   };
-  handleOnChange = e => {
+  handleOnChange = event => {
+    event.preventDefault();
     this.setState({
-      [e.target.name]: e.target.value
+      [event.target.name]: event.target.value
     });
   };
   render() {
@@ -84,7 +85,6 @@ class Login extends Component {
     );
   }
 }
-
 
 const mapStateToProps = state => {
   return { errors: state.errors };

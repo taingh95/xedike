@@ -2,7 +2,7 @@
 const validator = require('validator');
 const _ = require('lodash');
 const {User} = require('../models/user.model')
-const bcrypt = require('bcryptjs')
+
 
 
 
@@ -57,23 +57,22 @@ module.exports.validateRegisterInput = async (data) => {
 }
 
 //validator login
-module.exports.validateLoginInput = async (data) => {
+module.exports.validateLoginInput =  (data) => {
     let errors = {};
+
+    data.email = _.get(data, 'email', '')
+    data.passWord = _.get(data, 'passWord', '')
+
 
     //validator email
     if(validator.isEmpty(data.email)) {
         errors.email = "Email is required"
-    } else {
-        const user =  await User.findOne({email : data.email})
-        if(!user) errors.email = "User does not exists"
+    }  else if(!validator.isEmail(data.email)) {
+        errors.email = "Email is invalid"
     }
     //validator passWord
     if(validator.isEmpty(data.passWord)) {
         errors.passWord = "Password is required"
-    } else {
-        const user = await User.findOne({email : data.email})
-        const isMatch = await bcrypt.compare(data.passWord, user.passWord)
-        if(!isMatch) errors.passWord = "Password is incorrect"
     }
     return {
         isValid: _.isEmpty(errors),

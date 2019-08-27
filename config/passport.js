@@ -11,18 +11,15 @@ opts.secretOrKey = process.env.SECRET_KEY;
 
 module.exports = passport => {
   passport.use(
-    new JwtStrategy(opts, function(jwt_payload, done) {
-      User.findOne({ _id: jwt_payload.id }, function(err, user) {
-        if (err) {
-          return done(err, false);
-        }
-        if (user) {
-          return done(null, jwt_payload);
-        } else {
+    new JwtStrategy(opts, (jwt_payload, done) => {
+      User.findById(jwt_payload.id)
+        .then(user => {
+          if (user) {
+            return done(null, user);
+          }
           return done(null, false);
-          // or you could create a new account
-        }
-      });
+        })
+        .catch(err => console.log(err));
     })
   );
 };
