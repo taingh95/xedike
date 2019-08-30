@@ -13,7 +13,7 @@ mongoose
   .catch(console.log);
 
 app.use("/", express.static("public"));
-
+app.use("/uploads", express.static("uploads"));
 
 
 app.use(function(req, res, next) {
@@ -21,7 +21,7 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, fingerprint"
+    "Origin, X-Requested-With, Content-Type, Accept,  Access-Control-Request-Headers, Authorization"
   );
   next();
 });
@@ -37,10 +37,9 @@ app.use("/api/users", apiUser);
 app.use("/api/drivers", apiDriver);
 app.use("/api/trips", apiTrip);
 
-//static uploads
-app.use("/uploads", express.static("uploads"));
-
-
+app.get("/*", function (req, res) {
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+})
 
 
 app.listen(port, () => {

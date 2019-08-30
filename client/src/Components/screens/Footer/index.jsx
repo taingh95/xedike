@@ -5,8 +5,8 @@ export default function Footer() {
   const styles = {
     footerBG: {
       height: "auto",
-      backgroundColor: "#218838",
-      padding: "5rem"
+      backgroundColor: "#5A6267",
+      padding: "3rem"
     },
     content: {
       color: "#fff",

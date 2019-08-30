@@ -5,6 +5,8 @@ require("dotenv").config();
 
 //const validator
 const validate = require("../../validation/validate-register");
+const validateForm = require("../../validation/validate-user-propfile")
+
 
 //load model
 const { User } = require("../../models/user.model");
@@ -58,15 +60,17 @@ module.exports.register = async (req, res) => {
 ///User login
 module.exports.login = (req, res) => {
   const { email, passWord } = req.body;
-  const {errors, isValid} = validate.validateLoginInput({email, passWord})
-  if(!isValid) return res.status(400).json({errors})
+  const { errors, isValid } = validate.validateLoginInput({ email, passWord });
+  if (!isValid) return res.status(400).json({ errors });
   User.findOne({ email: email })
     .then(user => {
-      if (!user) return res.status(400).json({ error: "User does not exists" });
-
+      if (!user)
+        return res.status(400).json({ error: "User or Password is incorrect" });
       bcrypt.compare(passWord, user.passWord, (err, isMatch) => {
         if (!isMatch)
-          return res.status(400).json({ error: "Password incorrect" });
+          return res
+            .status(400)
+            .json({ error: "User or Password is incorrect" });
         const payload = {
           id: user._id,
           email: user.email,
@@ -74,9 +78,10 @@ module.exports.login = (req, res) => {
           userType: user.userType,
           DOB: user.DOB,
           phone: user.phone,
-          isOnTheTrip: user.onTheTrip
+          isOnTheTrip: user.onTheTrip,
+          avatar: user.avatar || "",
         };
-        const secretKey = process.env.SECRET_KEY ;
+        const secretKey = process.env.SECRET_KEY;
         jwt.sign({ payload }, secretKey, { expiresIn: "2h" }, (err, token) => {
           if (err) return res.status(400).json({ error: err });
           res.status(200).json({ token: token, msg: "Login success" });
@@ -99,17 +104,32 @@ module.exports.uploadAvatar = (req, res) => {
 
 //User edit information
 module.exports.editInformation = (req, res) => {
-  const { email, fullName, passWord, DOB, phone } = req.body;
+  const { email, fullName, DOB, phone } = req.body;
+  // const {isValid, errors} =  validateForm.updateUser(req.body)
+  // if (!isValid) return res.status(400).json({ errors: errors });
   User.findById(req.user.payload.id)
     .then(user => {
       user.email = email;
       user.fullName = fullName;
-      user.passWord = passWord;
       user.DOB = DOB;
       user.phone = phone;
-      bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(user.passWord, salt, function(err, hash) {
-          // Store hash in your password DB.
+      user
+        .save()
+        .then(user => res.status(200).json(user))
+        .catch(err => res.status(400).json(err));
+    })
+    .catch(err => res.status(400).json(err));
+};
+//Module change password
+module.exports.changePassword = (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  User.findById(req.user.payload.id).then(user => {
+    if (!user) return res.status(400).json({ error: "User does not exists" });
+    bcrypt.compare(currentPassword, user.passWord, (err, isMatch) => {
+      if (!isMatch)
+        return res.status(400).json({ error: "Password is incorrect" });
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newPassword, salt, (err, hash) => {
           if (err) throw err;
           user.passWord = hash;
           user
@@ -118,9 +138,10 @@ module.exports.editInformation = (req, res) => {
             .catch(err => res.status(400).json(err));
         });
       });
-    })
-    .catch(err => res.status(400).json(err));
+    });
+  });
 };
+
 //User deactive their account
 module.exports.deactiveAccount = (req, res) => {
   User.findByIdAndDelete({ _id: req.user.payload.id })

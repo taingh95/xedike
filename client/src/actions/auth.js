@@ -1,5 +1,6 @@
 import axios from "axios";
-import { toast } from "react-toastify";
+import swal from 'sweetalert';
+
 
 import {
   GET_ERRORS,
@@ -22,45 +23,35 @@ export const register = (user, history) => {
     axios
       .post("http://localhost:8080/api/users/register", user)
       .then(res => {
-        console.log(res);
         dispatch(getErrors({}));
-      })
-      .then(success =>
-        toast.success("Chúc mừng bạn đã đăng ký thành công!!", {
-          position: toast.POSITION.TOP_CENTER,
-          onClose: () => {
-            history.push("/login");
-          }
+        swal("Success!!", "You have successfully registered", "success").then(result => {
+          history.push("/login");
         })
-      )
+      })
       .catch(err => dispatch(getErrors(err.response.data.errors)));
   };
 };
 
-
-export const login = (data, history) => {
+export const login = (user, history) => {
   return dispatch => {
     axios
-      .post("http://localhost:8080/api/users/login", { data })
+      .post("http://localhost:8080/api/users/login", user)
       .then(res => {
-        console.log(res.data);
-        const token = res.data;
+        const token = res.data.token;
         localStorage.setItem("token", token);
         setHeader(token);
         const decoded = jwtDecode(token);
-        dispatch(setCurrentUser(decoded));
+        dispatch(setCurrentUser(decoded.payload));
+        dispatch(getErrors({}))
+        swal("Login Success!!", "Wellcome to SharingCar!!", "success").then(result => {
+          history.goBack();
+        })
       })
-      .then(success => {
-        toast.success("Chúc mừng bạn đã đăng nhập thành công!!", {
-          position: toast.POSITION.TOP_CENTER,
-          onClose: () => {
-            history.goback();
-          }
-        });
-      })
-      .catch(err => dispatch(getErrors(err.response.data.errors)));
+      .catch(err => dispatch(getErrors(err.response.data.errors || {error : err.response.data.error})));
   };
 };
+
+
 export const setCurrentUser = data => {
   return {
     type: SET_CURRENT_USER,
@@ -71,8 +62,8 @@ export const setCurrentUser = data => {
 export const setUserLoading = () => {
   return {
     type: USER_LOADING
-  }
-}
+  };
+};
 
 //log out
 export const logoutUser = () => {
@@ -80,5 +71,5 @@ export const logoutUser = () => {
     localStorage.removeItem("token");
     setHeader(false);
     dispatch(setCurrentUser({}));
-  }
-}
+  };
+};

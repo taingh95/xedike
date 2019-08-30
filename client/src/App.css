@@ -1,0 +1,9 @@
+@import '~antd/dist/antd.css';
+
+body {
+    background-color: #f2f2f2 !important;
+}
+
+.swal-button--confirm {
+    background-color: #5a6267;
+}

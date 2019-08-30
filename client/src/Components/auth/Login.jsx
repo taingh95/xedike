@@ -3,7 +3,14 @@ import { Form, FormGroup, Label, Input, FormText, Button } from "reactstrap";
 import { connect } from "react-redux";
 import { login } from "../../actions/auth";
 
-class Login extends Component {
+//icons 
+import { Email, Lock } from "@material-ui/icons";
+
+
+
+
+
+class authLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,35 +18,23 @@ class Login extends Component {
       passWord: ""
     };
   }
-  handleOnSubmit = event => {
-    event.preventDefault();
+  handleOnSubmit = e => {
+    e.preventDefault();
     this.props.loginAction(this.state, this.props.history);
   };
-  handleOnChange = event => {
-    event.preventDefault();
+  handleOnChange = e => {
     this.setState({
-      [event.target.name]: event.target.value
+      [e.target.name]: e.target.value
     });
   };
   render() {
-    const { email, passWord } = this.props.errors;
+    const { email, passWord, error } = this.props.errors;
     return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{
-          height: "100vh",
-          backgroundImage: "url('./images/02_hero_banner.jpg')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover"
-        }}
-      >
-        <Form
-          className="border border-success rounded p-5"
-          style={{ width: "500px", backgroundColor: "rgba(255,255,255,.8)" }}
-        >
+      <div className="container py-5">
+        <Form onSubmit={this.handleOnSubmit}>
           <p className="h1 mx-auto">Đăng Nhập</p>
           <FormGroup>
-            <Label for="loginEmail">Email</Label>
+            <Label for="loginEmail"><Email style={{marginBottom: "1px", marginRight: "3px"}} /> Email</Label>
             <Input
               id="loginEmail"
               type="email"
@@ -56,7 +51,7 @@ class Login extends Component {
             )}
           </FormGroup>
           <FormGroup>
-            <Label for="loginPassword">Password</Label>
+            <Label for="loginPassword"><Lock style={{marginBottom: "1px", marginRight: "3px"}} />Password</Label>
             <Input
               id="loginPassword"
               type="password"
@@ -73,11 +68,16 @@ class Login extends Component {
                 {passWord}
               </span>
             )}
+            {error && (
+              <span className="text-danger mt-2 ml-2 font-weight-light">
+                {error}
+              </span>
+            )}
           </FormGroup>
-          <Button block color="success" type="submit">
+          <Button block outline color="secondary" type="submit">
             Login
           </Button>
-          <Button block outline color="secondary">
+          <Button block color="secondary">
             Cancel
           </Button>
         </Form>
@@ -87,8 +87,11 @@ class Login extends Component {
 }
 
 const mapStateToProps = state => {
-  return { errors: state.errors };
+  return {
+    errors: state.errors
+  };
 };
+
 const mapDispatchToProps = dispatch => {
   return {
     loginAction: (data, history) => {
@@ -100,4 +103,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login);
+)(authLogin);

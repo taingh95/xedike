@@ -4,9 +4,7 @@ require("dotenv").config();
 //xac that nguoi dung
 module.exports.authentication = (req, res, next) => {
   const token = req.header("Authorization");
-  const fingerprint = req.header('fingerprint');
-  console.log(fingerprint, "aa")
-  const KEY = process.env.SECRET_KEY + fingerprint;
+  const KEY = process.env.SECRET_KEY ;
   try {
     const decoded = jwt.verify(token, KEY);
     req.user = decoded;

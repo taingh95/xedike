@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { Form, FormGroup, Label, Input, Button, Col } from "reactstrap";
-import { ToastContainer } from "react-toastify";
-
-//action
+import {connect} from "react-redux";
 import { register } from "../../actions/auth";
+import { Email, Lock, LocalPhone, CalendarToday, PermContactCalendar } from "@material-ui/icons";
 
-class Register extends Component {
+class authRegister extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,37 +26,14 @@ class Register extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
   render() {
-    const {
-      email,
-      fullName,
-      passWord,
-      passWord2,
-      phone,
-      DOB
-    } = this.props.errors;
-    const styles = {
-      toastStyle: {
-        backgroundColor: "#095221"
-      }
-    };
+    const {email, fullName, passWord, passWord2, phone, DOB} = this.props.errors
     return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{
-          height: "100vh",
-          backgroundImage: "url('./images/02_hero_banner.jpg')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover"
-        }}
-      >
-        <Form
-          onSubmit={this.handleOnSubmit}
-          className="border border-success rounded p-5 col-md-8"
-          style={{ backgroundColor: "rgba(255,255,255,.8)" }}
-        >
+      <div className="container py-5">
+        <Form onSubmit={this.handleOnSubmit}>
           <p className="h1 mx-auto">Đăng Ký</p>
           <FormGroup row>
             <Label for="registerEmail" sm={3}>
+            <Email style={{marginBottom: "1px", marginRight: "3px"}} />   
               Email
             </Label>
             <Col sm={9}>
@@ -70,15 +45,16 @@ class Register extends Component {
                 value={this.state.email}
                 onChange={this.handleOnChange}
               />
-              {email && (
+               {email && (
                 <span className="text-danger mt-2 ml-2 font-weight-light">
                   {email}
                 </span>
-              )}
+              )} 
             </Col>
           </FormGroup>
           <FormGroup row>
             <Label for="registerFullName" sm={3}>
+            <PermContactCalendar style={{marginBottom: "1px", marginRight: "3px"}} />        
               Full Name
             </Label>
             <Col sm={9}>
@@ -90,15 +66,16 @@ class Register extends Component {
                 value={this.state.fullName}
                 onChange={this.handleOnChange}
               />
-              {fullName && (
+               {fullName && (
                 <span className="text-danger mt-2 ml-2 font-weight-light">
                   {fullName}
                 </span>
-              )}
+              )} 
             </Col>
           </FormGroup>
           <FormGroup row>
             <Label for="registerPassword" sm={3}>
+            <Lock style={{marginBottom: "1px", marginRight: "3px"}} />    
               Password
             </Label>
             <Col sm={9}>
@@ -110,15 +87,16 @@ class Register extends Component {
                 value={this.state.passWord}
                 onChange={this.handleOnChange}
               />
-              {passWord && (
+               {passWord && (
                 <span className="text-danger mt-2 ml-2 font-weight-light">
                   {passWord}
                 </span>
-              )}
+              )} 
             </Col>
           </FormGroup>
           <FormGroup row>
             <Label for="confirmPassword" sm={3}>
+            <Lock style={{marginBottom: "1px", marginRight: "3px"}} />       
               Confirm Password
             </Label>
             <Col sm={9}>
@@ -139,6 +117,7 @@ class Register extends Component {
           </FormGroup>
           <FormGroup row>
             <Label for="registerPhone" sm={3}>
+            <LocalPhone style={{marginBottom: "1px", marginRight: "3px"}} />       
               Phone Number
             </Label>
             <Col sm={9}>
@@ -150,15 +129,16 @@ class Register extends Component {
                 value={this.state.phone}
                 onChange={this.handleOnChange}
               />
-              {phone && (
+               {phone && (
                 <span className="text-danger mt-2 ml-2 font-weight-light">
                   {phone}
                 </span>
-              )}
+              )} 
             </Col>
           </FormGroup>
           <FormGroup row>
             <Label for="DOB" sm={3}>
+            <CalendarToday style={{marginBottom: "1px", marginRight: "3px"}} />           
               Your birthday
             </Label>
             <Col sm={9}>
@@ -166,42 +146,41 @@ class Register extends Component {
                 id="DOB"
                 type="date"
                 name="DOB"
-                value={this.state.DOB}
-                onChange={this.handleOnChange}
+                 value={this.state.DOB}
+                 onChange={this.handleOnChange}
               />
-              {DOB && (
+               {DOB && (
                 <span className="text-danger mt-2 ml-2 font-weight-light">
                   {DOB}
                 </span>
-              )}
+              )} 
             </Col>
           </FormGroup>
-          <FormGroup check row>
-            <Button type="submit" block color="success">
+          <FormGroup>
+            <Button type="submit" block outline color="secondary">
               Đăng Ký
             </Button>
-            <Button block outline color="secondary">
+            <Button block  color="secondary">
               Cancel
             </Button>
           </FormGroup>
         </Form>
-        <ToastContainer autoClose={1500} style={styles.toastStyle} />
       </div>
     );
   }
 }
 
 const mapStateToProps = state => {
-  return { errors: state.errors };
-};
+    return {
+        errors: state.errors
+    }
+}
 
 const mapDispatchToProps = dispatch => {
-  return {
-    registerAction: (user, history) => dispatch(register(user, history))
-  };
-};
+    return {
+        registerAction: (data,history) => dispatch(register(data,history))
+    }
+}
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Register);
+
+export default connect(mapStateToProps,mapDispatchToProps)(authRegister);

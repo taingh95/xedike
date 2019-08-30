@@ -23,12 +23,22 @@ router.put(
   authMiddleware.authentication,
   userController.editInformation
 );
+router.put(
+  "/change-password",
+  authMiddleware.authentication,
+  userController.changePassword
+);
+
 router.post(
   "/deactive",
   authMiddleware.authentication,
   userController.deactiveAccount
 );
 //Become a driver
-router.post("/becomeDriver", authMiddleware.authentication,userController.becomeDriver);
+router.post(
+  "/becomeDriver",
+  authMiddleware.authentication,
+  userController.becomeDriver
+);
 //authMiddleware.isDriver,
 module.exports = router;

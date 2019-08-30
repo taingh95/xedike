@@ -1,10 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Component } from "react";
+
 import { Link } from "react-router-dom";
-import "./header.css";
 import {
-  Collapse,
   Navbar,
-  NavbarToggler,
   Nav,
   NavItem,
   UncontrolledDropdown,
@@ -12,56 +10,114 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
+import { connect } from "react-redux";
+import { logoutUser } from "../../actions/auth";
+//font marterial
+import { AccountCircle, SupervisorAccount, History } from "@material-ui/icons";
 
-export default class Headers extends React.Component {
+//sytle
+const styles = {
+  iconsUser: {
+    fontSize: "3rem"
+  },
+  iconsDropdown: {
+    fontSize: "1.5rem",
+    marginRight: "1rem"
+  }
+};
+
+class Headers extends Component {
   constructor(props) {
     super(props);
+    this.state = {};
+  }
 
-    this.toggle = this.toggle.bind(this);
-    this.state = {
-      isOpen: false
-    };
-  }
-  toggle() {
-    this.setState({
-      isOpen: !this.state.isOpen
-    });
-  }
+  handleOnClickLogOut = () => {
+    this.props.actionLogOut();
+  };
+
   render() {
-    return (
-      <Fragment>
-        <Navbar expand="md" className="container" style={{height: "5rem"}}>
-            <Link className="nav-link" to="/">
+    const navbarForAnonymous = (
+      <Nav className="ml-auto" navbar>
+        <NavItem className="nav-link">
+          <Link to="/login">Login</Link>
+        </NavItem>
+        <NavItem className="nav-link">
+          <Link to="/register">Register</Link>
+        </NavItem>
+      </Nav>
+    );
+    const navbarForLoggedInUser = (
+      <Nav className="ml-auto" navbar>
+        <UncontrolledDropdown nav inNavbar>
+          <DropdownToggle nav caret>
+            {/* <img src="./images/icons/user-avatar-default.png" alt="..." className="rounded-circle" style={{width: "30px", height: "30px"}} /> */}
+            {this.props.auth.user.avatar ? (
               <img
-                style={{ width: "150px", height: "40px" }}
-                src="./logo.png"
-                alt="xedike-header-logo"
+                src={`http://localhost:8080/${this.props.auth.user.avatar}`}
+                alt="avatar-passenger-xedike"
+                className="rounded-circle"
+                style={{ width: "30px", height: "30px" }}
               />
+            ) : (
+              <AccountCircle style={styles.iconsUser} />
+            )}
+          </DropdownToggle>
+          <DropdownMenu right className="shadow-sm rounded" >
+            <Link to="/profile" style={{ textDecoration: "none" }}>
+              <DropdownItem>
+                <SupervisorAccount style={styles.iconsDropdown} />
+                Profile
+              </DropdownItem>
             </Link>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem>
-                <Link className="nav-link" to="/login">Đăng Nhập</Link>
-              </NavItem>
-              <NavItem>
-                <Link className="nav-link btn btn-success" to="/register">Đăng ký</Link>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  Options
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>Lịch sử chuyến đi</DropdownItem>
-                  <DropdownItem>Cài đặt tài khoản</DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem>Log out</DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-        </Navbar>
-      </Fragment>
+            <Link to="/profile" style={{ textDecoration: "none" }}>
+              <DropdownItem>
+                <History style={styles.iconsDropdown} />
+                History trips
+              </DropdownItem>
+            </Link>
+            <DropdownItem divider />
+            <DropdownItem onClick={this.handleOnClickLogOut}>
+              Log out
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </Nav>
+    );
+    return (
+      <Navbar
+        color="light"
+        light
+        expand="md"
+        className="border-bottom border-light"
+        style={{ boxShadow: "0px 1px 5px #00000020" }}
+      >
+        <div className="container">
+          <Link to="/" className="nav-link">
+            <img src="./logo.png" alt="" style={{ width: "7rem" }} />
+          </Link>
+          {this.props.auth.isAuthenticated
+            ? navbarForLoggedInUser
+            : navbarForAnonymous}
+        </div>
+      </Navbar>
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    actionLogOut: () => dispatch(logoutUser())
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Headers);

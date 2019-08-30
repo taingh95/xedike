@@ -1,29 +1,67 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React, { Component } from "react";
+
+import "./App.css";
 //React router
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { connect } from "react-redux";
+import jwtDecode from "jwt-decode";
 
-import Headers from './Components/layouts/Header'
-import Home from './Components/screens/Home/Home';
-import Footer from './Components/layouts/Footer';
-import Login from './Components/auth/Login';
-import Register from './Components/auth/Register';
-import Profile from './Components/screens/Profile-default/Profile'
+import Headers from "./Components/layouts/Header";
+import authLogin from "./Components/auth/Login";
+import authRegiser from "./Components/auth/Register";
+import Home from "./Components/screens/Home";
+import { setCurrentUser, logoutUser } from "./actions/auth";
+import setHeader from './helper/setHeader'
+import Profile from "./Components/screens/Profile";
+import NotFound from './Components/screens/NotFound'
+import Footer from "./Components/screens/Footer";
 
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Headers />
-        <Route path="/" exact component={Home}></Route>
-        <Route path="/profile" exact component={Profile}></Route>
-        <Route path="/login" exact component={Login}></Route>
-        <Route path="/register"  component={Register}></Route>
-        <Footer />
-      </BrowserRouter>
-    </div>
-  );
+
+class App extends Component {
+
+  componentDidMount() {
+    const token = localStorage.getItem("token");
+    if(!token) return;
+    const decoded = jwtDecode(token)
+    this.props.actionSetCurrentUser(decoded.payload);
+    setHeader(token)
+    
+    if(Date.now() / 2000 > decoded.exp) {
+      this.props.actionLogOut()
+    }
+  }
+
+  render() {
+    const isAuthentication = this.props.auth.isAuthenticated
+    return (
+      <div className="App">
+        <Router>
+          <Headers  />
+          <Route path="/" exact component={Home}  />
+          <Route path="/login" exact component={authLogin} />
+          <Route path="/register" exact component={authRegiser} />
+          <Route path="/profile" exact  component={isAuthentication ? Profile : NotFound} />
+          <Footer />
+        </Router>
+      </div>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    actionSetCurrentUser: (data) => dispatch(setCurrentUser(data)),
+    actionLogOut: () => dispatch(logoutUser())
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
