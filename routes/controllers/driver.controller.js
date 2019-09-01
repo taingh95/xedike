@@ -4,11 +4,11 @@ const { User } = require("../../models/user.model");
 const { Car } = require("../../models/car.model");
 
 module.exports.createProfile = (req, res) => {
-  const userId = req.user.payload.id;
+  const userId = req.user.payload._id;
   User.findById(userId)
     .then(user => {
       if (!user) return Promise.reject({ errors: "User does not exists" });
-      const driver = { ...req.body, userId };
+      const driver = { ...req.body, isActive: true ,userId };
       const newDriver = new Driver(driver);
       return newDriver.save();
     })
@@ -18,7 +18,7 @@ module.exports.createProfile = (req, res) => {
 
 module.exports.getDriverInfo = (req, res) => {
   const id = req.params.userId;
-  Driver.findById(id)
+  Driver.findOne({userId : id})
     .then(user => {
       if (!user) return Promise.reject({ errors: "Driver does not exists" });
       return res.status(200).json(user);
@@ -28,7 +28,7 @@ module.exports.getDriverInfo = (req, res) => {
 
 module.exports.updateDriverInfo = async (req, res) => {
   const { address, passportId, mainJob } = req.body;
-  const driver = await Driver.findOne({ userId: req.user.payload.id });
+  const driver = await Driver.findOne({ userId: req.user.payload._id });
   if (!driver) {
     return Promise.reject({ errors: "Driver does not exists" });
   } else {

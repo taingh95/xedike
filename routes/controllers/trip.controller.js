@@ -20,7 +20,7 @@ module.exports.tripInfo = (req, res) => {
 //create new trip
 module.exports.createTrip = (req, res) => {
   const { locationFrom, locationTo, startTime, availableSeats } = req.body;
-  Driver.findOne({ userId: req.user.payload.id })
+  Driver.findOne({ userId: req.user.payload._id })
     .then(driver => {
       if (!driver) return Promise.reject({ error: "Driver does not exists" });
       if (driver.carInfo.length <= 0)
@@ -43,7 +43,7 @@ module.exports.createTrip = (req, res) => {
 //update trip
 module.exports.updateTrip = (req, res) => {
   const tripId = req.params.tripId;
-  const driverId = req.user.payload.id;
+  const driverId = req.user.payload._id;
 
   Promise.all([Trip.findById(tripId), Driver.findOne({ userId: driverId })])
     .then(results => {
@@ -68,7 +68,7 @@ module.exports.updateTrip = (req, res) => {
 //delete trip
 module.exports.deleteTrip = (req, res) => {
   const tripId = req.params.tripId;
-  const driverId = req.user.payload.id;
+  const driverId = req.user.payload._id;
 
   Promise.all([
     Trip.findByIdAndDelete(tripId),
@@ -93,7 +93,7 @@ module.exports.deleteTrip = (req, res) => {
 module.exports.bookTrip = (req, res) => {
   const tripId = req.params.tripId;
   const { numberOfBookingSeats } = req.body;
-  const passengerId = req.user.payload.id;
+  const passengerId = req.user.payload._id;
   Promise.all([Trip.findById(tripId), User.findById(passengerId)])
     .then(results => {
       const trip = results[0];
@@ -117,7 +117,7 @@ module.exports.bookTrip = (req, res) => {
 
 module.exports.cancelBookTrip = (req, res) => {
   const tripId = req.params.tripId;
-  const passengerId = req.user.payload.id;
+  const passengerId = req.user.payload._id;
 
   Promise.all([Trip.findById(tripId), User.findById(passengerId)])
     .then(results => {

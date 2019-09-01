@@ -3,6 +3,8 @@ import { Button, Row, Col, Form, FormGroup, Label, Input } from "reactstrap";
 import { Lock } from "@material-ui/icons";
 import { connect } from "react-redux";
 import { changePassword } from "../../../actions/user-profile";
+import swal from 'sweetalert'
+
 
 const styles = {
   iconsGeneral: {
@@ -27,7 +29,16 @@ class PasswordForm extends Component {
       confirmNewPassword: ""
     };
   }
-
+    handleOnCancel = e => {
+      e.preventDefault();
+      swal('Your upgraded will be discharge?', {
+        title: "Are you sure?",
+        buttons: true,
+        icon: "warning"
+      }).then(confirmLogin => {
+        (confirmLogin) ? this.props.history.goBack() : swal.close()
+      }).catch(err => console.log(err))
+    }
   handleOnChange = e => {
     this.setState({
       [e.target.name]: e.target.value
@@ -93,7 +104,9 @@ class PasswordForm extends Component {
               <Button outline type="submit" className="px-5 mr-2">
                 Save
               </Button>
-              <Button type="reset" className="px-5 ml-2">
+              <Button type="reset" className="px-5 ml-2"
+              onClick={this.handleOnCancel}
+              >
                 Cancel
               </Button>
             </Form>

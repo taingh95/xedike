@@ -15,7 +15,9 @@ const driverSchema = new mongoose.Schema({
     carInfo: [{
         type: carSchema
     }],
-    onTheTrip : {type: Boolean, default: false}
+    onTheTrip : {type: Boolean, default: false},
+    isActive: false,
+    tripSuccess: {type: Number, default: 0}
 })
 
 const Driver = mongoose.model('Driver', driverSchema, 'drivers');

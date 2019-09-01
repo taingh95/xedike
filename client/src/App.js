@@ -11,11 +11,13 @@ import authLogin from "./Components/auth/Login";
 import authRegiser from "./Components/auth/Register";
 import Home from "./Components/screens/Home";
 import { setCurrentUser, logoutUser } from "./actions/auth";
+import {loadMyProfile} from './actions/user-profile'
 import setHeader from './helper/setHeader'
 import Profile from "./Components/screens/Profile";
 import NotFound from './Components/screens/NotFound'
 import Footer from "./Components/screens/Footer";
-
+import DriverProfile from "./Components/screens/Profile/driver-profile"
+import SettingProfile from './Components/screens/Profile/setting'
 
 class App extends Component {
 
@@ -23,9 +25,8 @@ class App extends Component {
     const token = localStorage.getItem("token");
     if(!token) return;
     const decoded = jwtDecode(token)
-    this.props.actionSetCurrentUser(decoded.payload);
+    this.props.actionloadMyProfile(decoded.payload._id)
     setHeader(token)
-    
     if(Date.now() / 2000 > decoded.exp) {
       this.props.actionLogOut()
     }
@@ -40,7 +41,10 @@ class App extends Component {
           <Route path="/" exact component={Home}  />
           <Route path="/login" exact component={authLogin} />
           <Route path="/register" exact component={authRegiser} />
-          <Route path="/profile" exact  component={isAuthentication ? Profile : NotFound} />
+          <Route path="/setting/profile-general" exact  component={isAuthentication ? Profile : NotFound} />
+          <Route path="/setting/profile-driver" exact  component={isAuthentication ? DriverProfile : NotFound} />
+          <Route path="/setting" exact  component={isAuthentication ? SettingProfile : NotFound} />
+          <Route path="/not-found-404" exact  component={NotFound} />
           <Footer />
         </Router>
       </div>
@@ -57,7 +61,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     actionSetCurrentUser: (data) => dispatch(setCurrentUser(data)),
-    actionLogOut: () => dispatch(logoutUser())
+    actionLogOut: () => dispatch(logoutUser()),
+    actionloadMyProfile: (id) => dispatch(loadMyProfile(id))
   };
 };
 

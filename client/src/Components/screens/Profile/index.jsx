@@ -18,7 +18,7 @@ import { Email, LocalPhone, CalendarToday, PermContactCalendar, AccountCircle } 
 import swal from 'sweetalert'
 import { connect } from "react-redux";
 import axios from "axios";
-import {updateUserProfile} from '../../../actions/user-profile';
+import {updateUserProfile, loadMyProfile} from '../../../actions/user-profile';
 
 const styles = {
   iconsGeneral: {
@@ -76,7 +76,9 @@ class Profile extends Component {
             this.setState({
               avatar: res.data.avatar
             });
-            swal("Success!!", "Your avatar was updated!", "success");
+            swal("Success!!", "Your avatar was updated!", "success").then(suc => {
+              this.props.actionLoadMyProfile(this.props.auth.user._id)
+            })
           })
           .catch(err => swal("Failed", "Something was wrong", "warning"));
       }
@@ -90,8 +92,18 @@ class Profile extends Component {
       phone: this.state.phone,
       DOB: this.state.DOB,
     };
-    this.props.actionUpdateUserProfile(user)
+    this.props.actionUpdateUserProfile(user, this.props.auth.user._id)
   };
+  handleOnCancel = e => {
+    e.preventDefault();
+    swal('Your upgraded will be discharge?', {
+      title: "Are you sure?",
+      buttons: true,
+      icon: "warning"
+    }).then(confirmLogin => {
+      (confirmLogin) ? this.props.history.goBack() : swal.close()
+    }).catch(err => console.log(err))
+  }
   componentDidMount() {
     const formatedDOB = moment(this.props.auth.user.DOB, "YYYY-MM-DD").format(
       "YYYY-MM-DD"
@@ -110,7 +122,7 @@ class Profile extends Component {
           <div className="container shadow-sm rounded px-5 py-4 my-5" style={styles.formCSS}>
         <Row>
           <AccountCircle style={styles.iconsGeneral} />
-          <h1 className="h4">General Profile</h1>
+          <h1 className="h4">Passenger Profile</h1>
         </Row>
         <Row className="mt-3">
           <Col md={4}>
@@ -204,14 +216,16 @@ class Profile extends Component {
               <Button outline type="submit" className="px-5 mr-2">
                 Save
               </Button>
-              <Button type="reset" className="px-5 ml-2">
+              <Button type="reset" className="px-5 ml-2" 
+              onClick={this.handleOnCancel}
+              >
                 Cancel
               </Button>
             </Form>
           </Col>
         </Row>
       </div>
-      <PasswordForm />
+      <PasswordForm history={this.props.history} />
       </Fragment>
     );
   }
@@ -226,7 +240,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        actionUpdateUserProfile : data => dispatch(updateUserProfile(data))
+        actionUpdateUserProfile : (data,id) => dispatch(updateUserProfile(data,id)),
+        actionLoadMyProfile: (id) => dispatch(loadMyProfile(id))
     }
 }
 

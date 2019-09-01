@@ -72,7 +72,7 @@ module.exports.login = (req, res) => {
             .status(400)
             .json({ error: "User or Password is incorrect" });
         const payload = {
-          id: user._id,
+          _id: user._id,
           email: user.email,
           fullName: user.fullName,
           userType: user.userType,
@@ -92,7 +92,7 @@ module.exports.login = (req, res) => {
 };
 //User upload-avatar
 module.exports.uploadAvatar = (req, res) => {
-  User.findById(req.user.payload.id)
+  User.findById(req.user.payload._id)
     .then(user => {
       if (!user) return res.status(400).json({ errors: "User doesnt exists" });
       user.avatar = req.file.path;
@@ -107,7 +107,7 @@ module.exports.editInformation = (req, res) => {
   const { email, fullName, DOB, phone } = req.body;
   // const {isValid, errors} =  validateForm.updateUser(req.body)
   // if (!isValid) return res.status(400).json({ errors: errors });
-  User.findById(req.user.payload.id)
+  User.findById(req.user.payload._id)
     .then(user => {
       user.email = email;
       user.fullName = fullName;
@@ -123,7 +123,7 @@ module.exports.editInformation = (req, res) => {
 //Module change password
 module.exports.changePassword = (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  User.findById(req.user.payload.id).then(user => {
+  User.findById(req.user.payload._id).then(user => {
     if (!user) return res.status(400).json({ error: "User does not exists" });
     bcrypt.compare(currentPassword, user.passWord, (err, isMatch) => {
       if (!isMatch)
@@ -144,7 +144,7 @@ module.exports.changePassword = (req, res) => {
 
 //User deactive their account
 module.exports.deactiveAccount = (req, res) => {
-  User.findByIdAndDelete({ _id: req.user.payload.id })
+  User.findByIdAndDelete({ _id: req.user.payload._id })
     .then(user => {
       if (!user) return Promise.reject({ errors: "User does not exists" });
       return user.userType.map(u => {
@@ -164,7 +164,7 @@ module.exports.deactiveAccount = (req, res) => {
 //Become a driver
 module.exports.becomeDriver = (req, res) => {
   console.log(JSON.stringify(req.user.payload.userType));
-  User.findById(req.user.payload.id)
+  User.findById(req.user.payload._id)
     .then(user => {
       if (!user) return Promise.reject({ errors: " User does not exists" });
       let isAccess = Boolean;

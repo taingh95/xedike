@@ -51,7 +51,6 @@ class Headers extends Component {
       <Nav className="ml-auto" navbar>
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav caret>
-            {/* <img src="./images/icons/user-avatar-default.png" alt="..." className="rounded-circle" style={{width: "30px", height: "30px"}} /> */}
             {this.props.auth.user.avatar ? (
               <img
                 src={`http://localhost:8080/${this.props.auth.user.avatar}`}
@@ -64,16 +63,16 @@ class Headers extends Component {
             )}
           </DropdownToggle>
           <DropdownMenu right className="shadow-sm rounded" >
-            <Link to="/profile" style={{ textDecoration: "none" }}>
+            <Link to="/setting" style={{ textDecoration: "none" }}>
               <DropdownItem>
                 <SupervisorAccount style={styles.iconsDropdown} />
-                Profile
+                My Profile
               </DropdownItem>
             </Link>
-            <Link to="/profile" style={{ textDecoration: "none" }}>
+            <Link to="/setting" style={{ textDecoration: "none" }}>
               <DropdownItem>
                 <History style={styles.iconsDropdown} />
-                History trips
+                My History Trips
               </DropdownItem>
             </Link>
             <DropdownItem divider />
@@ -94,7 +93,7 @@ class Headers extends Component {
       >
         <div className="container">
           <Link to="/" className="nav-link">
-            <img src="./logo.png" alt="" style={{ width: "7rem" }} />
+            <img src="http://localhost:8080/uploads/logo.png" alt="" style={{ width: "7rem" }} />
           </Link>
           {this.props.auth.isAuthenticated
             ? navbarForLoggedInUser

@@ -30,13 +30,13 @@ export default function Footer() {
         <div style={styles.contact} className="">
           <img
             style={{ width: "300px", marginBottom: "2rem" }}
-            src="./logoFooter.png"
+            src="http://localhost:8080/uploads/logoFooter.png"
             alt=""
           />
           <div style={{ marginTop: "1rem" }}>
             <img
               style={{ width: "1.2rem", position: "absolute" }}
-              src="./images/icons/phone.png"
+              src="http://localhost:8080/uploads/phone.png"
               alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
@@ -46,7 +46,7 @@ export default function Footer() {
           <div style={{ marginTop: "1rem" }}>
             <img
               style={{ width: "1.2rem", position: "absolute" }}
-              src="./images/icons/phone.png"
+              src="http://localhost:8080/uploads/phone.png"
               alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
@@ -56,7 +56,7 @@ export default function Footer() {
           <div style={{ marginTop: "1rem" }}>
             <img
               style={{ width: "1.2rem", position: "absolute" }}
-              src="./images/icons/Mail.png"
+              src="http://localhost:8080/uploads/Mail.png"
               alt=""
             />
             <p style={{ marginLeft: "2rem" }} className="h6">
@@ -68,21 +68,21 @@ export default function Footer() {
             <a href="https:/facebook.com" target="blank">
               <img
                 style={styles.icons}
-                src="./images/icons/Facebook.png"
+                src="http://localhost:8080/uploads/Facebook.png"
                 alt=""
               />
             </a>
             <a href="https://twitter.com/?lang=vi" target="blank">
               <img
                 style={styles.icons}
-                src="./images/icons/twitter.png"
+                src="http://localhost:8080/uploads/twitter.png"
                 alt=""
               />
             </a>
             <a href="https://www.linkedin.com/" target="blank">
               <img
                 style={styles.icons}
-                src="./images/icons/LinedIn.png"
+                src="http://localhost:8080/uploads/LinedIn.png"
                 alt=""
               />
             </a>

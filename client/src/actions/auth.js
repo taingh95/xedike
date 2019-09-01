@@ -25,7 +25,7 @@ export const register = (user, history) => {
       .then(res => {
         dispatch(getErrors({}));
         swal("Success!!", "You have successfully registered", "success").then(result => {
-          history.push("/login");
+          history.push("/");
         })
       })
       .catch(err => dispatch(getErrors(err.response.data.errors)));
@@ -41,6 +41,7 @@ export const login = (user, history) => {
         localStorage.setItem("token", token);
         setHeader(token);
         const decoded = jwtDecode(token);
+        console.log(decoded.payload)
         dispatch(setCurrentUser(decoded.payload));
         dispatch(getErrors({}))
         swal("Login Success!!", "Wellcome to SharingCar!!", "success").then(result => {
@@ -71,5 +72,6 @@ export const logoutUser = () => {
     localStorage.removeItem("token");
     setHeader(false);
     dispatch(setCurrentUser({}));
+    window.location.href="http://localhost:3000/"
   };
 };
