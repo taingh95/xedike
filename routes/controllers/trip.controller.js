@@ -2,39 +2,55 @@ const { Trip } = require("../../models/trip.model");
 const { Driver } = require("../../models/driver.model");
 const { User } = require("../../models/user.model");
 
+//validator
+const tripValidate = require("../../validation/validate-trip")
+
+
 //get all trips
-module.exports.getTrips = (req, res) => {
-  Trip.find()
-    .select("-_id")
-    .then(result => res.status(200).json(result))
-    .catch(err => res.status(400).json(err));
+module.exports.getTrips = async (req, res) => {
+  let perPage = 4;
+  let page = req.params.page || 1;
+  try {
+    const foundTrip = await Trip.find({isFinished: false})
+      .skip(perPage * page - perPage)
+      .limit(perPage)
+    const count = await Trip.count({isFinished: false});
+    let pages = Math.ceil(count / perPage)
+    return res.status(200).json({ foundTrip, pages });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 };
 //trip details
 module.exports.tripInfo = (req, res) => {
   Trip.findById(req.params.tripId)
-    .select("-_id")
     .then(result => res.status(200).json(result))
     .catch(err => res.status(400).json(err));
 };
 
 //create new trip
 module.exports.createTrip = (req, res) => {
-  const { locationFrom, locationTo, startTime, availableSeats } = req.body;
+  const { locationFrom, locationTo, startTime, availableSeats, fee } = req.body;
+  const { errors, isValid } = tripValidate.tripValidation({ locationFrom, locationTo, startTime, availableSeats, fee });
+  if(!isValid) return res.status(400).json({errors})
   Driver.findOne({ userId: req.user.payload._id })
     .then(driver => {
       if (!driver) return Promise.reject({ error: "Driver does not exists" });
+      // if(!driver.address) return Promise.reject({error: "Driver does has infomation. Please update your information"})
       if (driver.carInfo.length <= 0)
         return Promise.reject({
           error: "Driver does not have car. Please update your Information"
         });
       if (driver.onTheTrip === true)
-        return Promise.reject({ error: "Driver is on the trip now" });
+        return Promise.reject({ error: "Driver is on the another trip now" });
       const driverId = driver.id;
       const trip = { ...req.body, driverId };
       const newTrip = new Trip(trip);
-      driver.onTheTrip = true;
-      driver.save();
-      return newTrip.save();
+      return newTrip.save().then(success => {
+        driver.onTheTrip = true;
+        driver.currentTrip.push(newTrip._id);
+        driver.save();
+      });
     })
     .then(trip => res.status(200).json(trip))
     .catch(err => res.status(400).json(err));
@@ -83,11 +99,18 @@ module.exports.deleteTrip = (req, res) => {
       if (!trip.driverId[0].equals(driver._id))
         return Promise.reject({ error: "No permission" });
       driver.onTheTrip = false;
+      driver.currentTrip.splice(0, 1);
       driver.save();
       return res.status(200).json(`Deleted ${trip}`);
     })
     .catch(err => res.status(400).json(err));
 };
+
+//filter trip
+module.exports.filterTrip = (req,res) => {
+
+}
+
 
 // ======================================= book trip ===================================================
 module.exports.bookTrip = (req, res) => {
@@ -125,16 +148,16 @@ module.exports.cancelBookTrip = (req, res) => {
       const passenger = results[1];
       if (!passenger) return Promise.reject({ error: "Passenger not found" });
       if (!trip) return Promise.reject({ error: "Trip not found" });
-      
-      trip.passenger.map((userBooked,key) => {
-        if(userBooked.passengerId.equals(passenger._id)) {
-            trip.availableSeats += userBooked.numberOfBookingSeats
-            return trip.passenger.splice(key, 1)
+
+      trip.passenger.map((userBooked, key) => {
+        if (userBooked.passengerId.equals(passenger._id)) {
+          trip.availableSeats += userBooked.numberOfBookingSeats;
+          return trip.passenger.splice(key, 1);
         }
-      })
+      });
       passenger.onTheTrip = false;
       passenger.save();
-     return trip.save();
+      return trip.save();
     })
     .then(trip => res.status(200).json(trip))
     .catch(err => res.status(400).json(err));

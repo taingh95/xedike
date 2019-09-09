@@ -31,7 +31,8 @@ const styles = {
     fontSize: "8rem"
   },
   formCSS: {
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    marginTop: 100,
   }
 };
 
@@ -76,7 +77,7 @@ class SettingProfile extends Component {
     return (
       <div className="container">
         <div
-          className="shadow-sm rounded px-5 py-4 my-5"
+          className="shadow-sm rounded px-5 py-4"
           style={styles.formCSS}
         >
           <Row className="d-flex justify-content-between mb-5">

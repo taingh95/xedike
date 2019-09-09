@@ -30,7 +30,8 @@ const styles = {
     fontSize: "15rem"
   },
   formCSS: {
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    marginTop: 100
   }
 };
 
@@ -90,7 +91,7 @@ class DriverProfile extends Component {
     return (
       <Fragment>
         <div
-          className="container shadow-sm rounded px-5 py-4 my-5"
+          className="container shadow-sm rounded px-5 py-4"
           style={styles.formCSS}
         >
           <Row>

@@ -14,9 +14,9 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
+  DropdownItem
 } from "reactstrap";
-import { MoreVert, AccountCircle } from "@material-ui/icons";
+import { MoreVert, AccountCircle, Star } from "@material-ui/icons";
 import BecomeDriverSection from "../../layouts/Become-Driver-Section";
 import CarSectionPopup from "./Car-section-popup";
 
@@ -47,7 +47,8 @@ class DriverSection extends Component {
       fullName: "",
       carBrand: "",
       car: "",
-        //ui state   
+      rated: 0,
+      //ui state
       toggleModal: false
     };
   }
@@ -59,7 +60,6 @@ class DriverSection extends Component {
       axios
         .get(`http://localhost:8080/api/drivers/${this.props.auth.user._id}`)
         .then(res => {
-            console.log(res.data, "b")
           this.setState({
             tripSuccessed: res.data.tripSuccess,
             address: res.data.address,
@@ -67,22 +67,22 @@ class DriverSection extends Component {
             mainJob: res.data.mainJob,
             avatar: this.props.auth.user.avatar,
             fullName: this.props.auth.user.fullName,
+            rated: res.data.passengersRates,
             // carBrand: res.data.carInfo[0].brand,
             car: res.data.carInfo[0]
-          })
+          });
         })
         .catch(err => console.log(err));
     }
   }
 
   //UI logic
-  actionToggleModal = (e) => {
-      e.preventDefault();
+  actionToggleModal = e => {
+    e.preventDefault();
     this.setState({
-        toggleModal: !this.state.toggleModal
-    })
-  }
-
+      toggleModal: !this.state.toggleModal
+    });
+  };
 
   render() {
     const notHasProfile = (
@@ -142,6 +142,15 @@ class DriverSection extends Component {
               </Card>
             </div>
             <div className="informationGeneral mt-2">
+            <p>
+                <Star style={{
+                  color: "#ffc107",
+                  marginBottom: "6px"
+                }} />{" "}
+                <span className="font-italic h5">
+                  {this.state.rated}
+                </span>
+              </p>
               <p>
                 Driver:{" "}
                 <span className="font-italic h5 mb-3">
@@ -208,25 +217,33 @@ class DriverSection extends Component {
                   Car:
                 </Label>
                 <Col sm={10}>
-                    <button 
-                    onClick={this.actionToggleModal} 
-                    className="text-info p-2" 
-                    datatoggle="tooltip" 
-                    dataplacement="left" 
+                  <button
+                    onClick={this.actionToggleModal}
+                    className="text-info p-2"
+                    datatoggle="tooltip"
+                    dataplacement="left"
                     title="Car information"
-                    > 
-                    {this.state.car.brand}
-                    </button>
+                  >
+                    {this.state.car ? (
+                      this.state.car.brand
+                    ) : (
+                      <Link to="/setting/profile-driver">
+                        Up date your car !!
+                      </Link>
+                    )}
+                  </button>
                 </Col>
               </FormGroup>
             </Form>
           </Col>
         </Row>
-        {(this.state.car) ? <CarSectionPopup 
-            toggleModal={this.state.toggleModal} 
-            actionToggleModal={this.actionToggleModal} 
+        {this.state.car ? (
+          <CarSectionPopup
+            toggleModal={this.state.toggleModal}
+            actionToggleModal={this.actionToggleModal}
             carInfo={this.state.car}
-        /> : null}
+          />
+        ) : null}
       </div>
     );
     const userWasDriver = (

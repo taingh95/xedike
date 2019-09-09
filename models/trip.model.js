@@ -6,12 +6,12 @@ const TripSchema = new mongoose.Schema({
         ref: 'Driver',
         required: true
     }],
-    locationFrom: String,
-    locationTo: String,
+    locationFrom: {type: String, required: true},
+    locationTo: {type: String, required: true},
     startTime: {type: Date, required: true},
-    availableSeats: Number,
-    fee: Number,
-    isFinished: Boolean,
+    availableSeats: {type: Number, required: true},
+    fee: {type: Number, required: true},
+    isFinished: {type: Boolean, default:  false},
     passenger: [{
         passengerId: {type: mongoose.Schema.Types.ObjectId, ref:"User", require: true},
         numberOfBookingSeats: {type: Number, required: true}

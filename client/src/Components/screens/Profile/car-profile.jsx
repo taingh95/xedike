@@ -4,8 +4,8 @@ import { DirectionsCar, Collections } from "@material-ui/icons";
 // import swal from "sweetalert";
 import { connect } from "react-redux";
 import axios from "axios";
-import swal from 'sweetalert'
-
+import swal from "sweetalert";
+import { createNewCar, updateYourCar } from "../../../actions/car-profile";
 
 const styles = {
   iconsGeneral: {
@@ -31,8 +31,10 @@ class CarProfile extends Component {
       lisencePlate: "",
       numberOfSeats: "",
       carImages: [],
+      driverId: "",
       file: null,
-      isActive: false
+      isActive: false,
+      carId: ""
     };
   }
 
@@ -45,36 +47,74 @@ class CarProfile extends Component {
 
   handleOnSubmit = e => {
     e.preventDefault();
+
+    if (this.state.carId) {
+      const formUpdateData = new FormData();
+      formUpdateData.append("brand", this.state.brand);
+      formUpdateData.append("model", this.state.model);
+      formUpdateData.append("lisencePlate", this.state.lisencePlate);
+      formUpdateData.append("numberOfSeats", this.state.numberOfSeats);
+      if (this.state.file) {
+        for (let i = 0; i < this.state.file.length; i++) {
+          formUpdateData.append("photos", this.state.file[i]);
+        }
+      } else {
+        this.state.carImages.map(img => {
+          formUpdateData.append("photos", img);
+        });
+      }
+      this.props.actionUpdateCar(formUpdateData, this.state.carId);
+    } else {
+      const formData = new FormData();
+      for (let i = 0; i < this.state.file.length; i++) {
+        formData.append("photos", this.state.file[i]);
+      }
+      formData.append("brand", this.state.brand);
+      formData.append("model", this.state.model);
+      formData.append("lisencePlate", this.state.lisencePlate);
+      formData.append("numberOfSeats", this.state.numberOfSeats);
+      this.props.actionCreateNewCar(formData, this.state.driverId);
+    }
   };
 
   handleOnCancel = e => {
     e.preventDefault();
-    swal('Your upgraded will be discharge?', {
+    swal("Your upgraded will be discharge?", {
       title: "Are you sure?",
       buttons: true,
       icon: "warning"
-    }).then(confirmLogin => {
-      (confirmLogin) ? this.props.history.goBack() : swal.close()
-    }).catch(err => console.log(err))
-  }
+    })
+      .then(confirmLogin => {
+        confirmLogin ? this.props.history.goBack() : swal.close();
+      })
+      .catch(err => console.log(err));
+  };
 
   componentDidMount() {
     axios
       .get(`http://localhost:8080/api/drivers/${this.props.auth.user._id}`)
       .then(res => {
-        const {
-          brand,
-          model,
-          lisencePlate,
-          numberOfSeats,
-          carImages
-        } = res.data.carInfo[0];
+        if (res.data.carInfo.length > 0) {
+          const {
+            brand,
+            model,
+            lisencePlate,
+            numberOfSeats,
+            carImages,
+            _id
+          } = res.data.carInfo[0];
+          this.setState({
+            brand,
+            model,
+            lisencePlate,
+            numberOfSeats,
+            carImages,
+            driverId: res.data._id,
+            carId: _id
+          });
+        }
         this.setState({
-          brand,
-          model,
-          lisencePlate,
-          numberOfSeats,
-          carImages
+          driverId: res.data._id
         });
       })
       .catch(err => {
@@ -183,8 +223,10 @@ class CarProfile extends Component {
                 <Button outline type="submit" className="px-5 mr-2">
                   Save
                 </Button>
-                <Button type="reset" className="px-5 ml-2"
-                    onClick={this.handleOnCancel}
+                <Button
+                  type="reset"
+                  className="px-5 ml-2"
+                  onClick={this.handleOnCancel}
                 >
                   Cancel
                 </Button>
@@ -203,7 +245,15 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    actionCreateNewCar: (data, driverId) =>
+      dispatch(createNewCar(data, driverId)),
+    actionUpdateCar: (data, carId) => dispatch(updateYourCar(data, carId))
+  };
+};
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(CarProfile);

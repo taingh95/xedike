@@ -30,9 +30,14 @@ class authLogin extends Component {
   render() {
     const { email, passWord, error } = this.props.errors;
     return (
-      <div className="container py-5">
+      <div className="container py-5" style={{marginTop: 60}}>
         <Form onSubmit={this.handleOnSubmit}>
           <p className="h1 mx-auto">Đăng Nhập</p>
+          {error && (
+              <span className="text-danger mt-2 ml-2 font-weight-light">
+                {error}
+              </span>
+            )}
           <FormGroup>
             <Label for="loginEmail"><Email style={{marginBottom: "1px", marginRight: "3px"}} /> Email</Label>
             <Input
@@ -66,11 +71,6 @@ class authLogin extends Component {
             {passWord && (
               <span className="text-danger mt-2 ml-2 font-weight-light">
                 {passWord}
-              </span>
-            )}
-            {error && (
-              <span className="text-danger mt-2 ml-2 font-weight-light">
-                {error}
               </span>
             )}
           </FormGroup>

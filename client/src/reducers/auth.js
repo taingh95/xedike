@@ -1,6 +1,6 @@
 import _ from "lodash";
 import {
-  SET_CURRENT_USER,
+  SET_CURRENT_USER, SET_DRIVER_PROFILE
 } from "../actions/constants/authType";
 
 const initialState = {

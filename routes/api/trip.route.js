@@ -5,7 +5,7 @@ const authMiddleware = require("../../middleware/auth");
 const router = express.Router();
 
 //get all trips
-router.get("/", tripController.getTrips);
+router.get("/find/:page", tripController.getTrips);
 //trip details
 router.get("/:tripId", tripController.tripInfo);
 
@@ -31,6 +31,8 @@ router.post(
   authMiddleware.authorization("driver"),
   tripController.deleteTrip
 );
+//search trip
+router.get("/filter", tripController.filterTrip)
 
 // ============= booking trip ===============
 router.post(

@@ -5,7 +5,6 @@ require("dotenv").config();
 
 //const validator
 const validate = require("../../validation/validate-register");
-const validateForm = require("../../validation/validate-user-propfile")
 
 
 //load model
@@ -80,6 +79,7 @@ module.exports.login = (req, res) => {
           phone: user.phone,
           isOnTheTrip: user.onTheTrip,
           avatar: user.avatar || "",
+          currentTrip: user.currentTrip
         };
         const secretKey = process.env.SECRET_KEY;
         jwt.sign({ payload }, secretKey, { expiresIn: "2h" }, (err, token) => {

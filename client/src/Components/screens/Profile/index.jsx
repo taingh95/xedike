@@ -30,7 +30,8 @@ const styles = {
     fontSize: "15rem"
   },
   formCSS: {
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    marginTop: 100
   }
 };
 
@@ -119,7 +120,7 @@ class Profile extends Component {
   render() {
     return (
       <Fragment>
-          <div className="container shadow-sm rounded px-5 py-4 my-5" style={styles.formCSS}>
+          <div className="container shadow-sm rounded px-5 py-4" style={styles.formCSS}>
         <Row>
           <AccountCircle style={styles.iconsGeneral} />
           <h1 className="h4">Passenger Profile</h1>
@@ -163,7 +164,7 @@ class Profile extends Component {
             </div>
           </Col>
           <Col md={8}>
-            <Form onSubmit={this.handleOnSubmit}>
+            <Form onSubmit={this.handleOnSubmit} >
               <FormGroup >
                 <Label for="passengerEmail">
                 <Email style={{marginBottom: "1px", marginRight: "3px"}} />     

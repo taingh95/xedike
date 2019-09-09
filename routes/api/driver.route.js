@@ -12,6 +12,7 @@ router.post(
 );
 
 router.get("/:userId", driverController.getDriverInfo);
+router.get("/find/:driverId", driverController.getDriverInfoByDriverId)
 router.post(
   "/update-driver",
   authMiddleware.authentication,
@@ -27,7 +28,7 @@ router.post(
   driverController.createNewCar
 );
 
-router.post(
+router.patch(
   "/update-car/:carId",
   authMiddleware.authentication,
   authMiddleware.authorization(["driver"]),

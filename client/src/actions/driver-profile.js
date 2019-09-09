@@ -6,7 +6,9 @@ import swal from 'sweetalert';
 export const createDriverProfile = (data) => {
     return dispatch => {
         axios.post("http://localhost:8080/api/drivers/create-profile", data ).then(res => {
-        swal("Success!", "Your information was upgrade.", "success")
+        swal("Success!", "Your information was upgrade.", "success").then(result => {
+            window.location.reload()
+        })
     }).catch(err => {console.log(err)})
     }
 }

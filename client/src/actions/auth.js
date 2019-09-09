@@ -5,7 +5,7 @@ import swal from 'sweetalert';
 import {
   GET_ERRORS,
   SET_CURRENT_USER,
-  USER_LOADING
+  SET_DRIVER_PROFILE
 } from "./constants/authType";
 
 import jwtDecode from "jwt-decode";
@@ -48,7 +48,7 @@ export const login = (user, history) => {
           history.goBack();
         })
       })
-      .catch(err => dispatch(getErrors(err.response.data.errors || {error : err.response.data.error})));
+      .catch(err => dispatch(getErrors(err.response.data.errors)));
   };
 };
 
@@ -60,9 +60,10 @@ export const setCurrentUser = data => {
   };
 };
 
-export const setUserLoading = () => {
+export const setCurrentDriver = (data) => {
   return {
-    type: USER_LOADING
+    type: SET_DRIVER_PROFILE,
+    payload: data
   };
 };
 
@@ -72,6 +73,6 @@ export const logoutUser = () => {
     localStorage.removeItem("token");
     setHeader(false);
     dispatch(setCurrentUser({}));
-    window.location.href="http://localhost:3000/"
+    window.location.href="http://localhost:3000/login"
   };
 };

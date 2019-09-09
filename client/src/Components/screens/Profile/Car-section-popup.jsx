@@ -43,7 +43,7 @@ class CarSectionPopup extends Component {
               return (
                 <img
                   style={{ width: 150, padding: 5, height: 150 }}
-                  src={`http://localhost:8080/${image}`}
+                  src={`http://localhost:8080/${image}` || null}
                   alt=""
                   key={i}
                 />

@@ -7,3 +7,134 @@ body {
 .swal-button--confirm {
     background-color: #5a6267;
 }
+
+.main-header {
+    position: fixed !important;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.introduction-text {
+    max-width: 500px;
+
+    float: left;
+}
+/* introduce */
+.introduction {
+    background: linear-gradient(90deg, rgba(90,98,103,1) 0%, rgba(90,98,96,1) 41%, rgba(175,184,186,1) 100%);
+    width: 100%;
+}
+
+
+@keyframes highway {
+    100% {
+        transform: translateX(-3400px)
+    }
+} */
+
+.car-body {
+    position: absolute;
+    width: 500px;
+}
+.car-body img {
+    width: 100%;
+    animation: car 1s linear infinite;
+    /* height: auto; */
+}
+
+@keyframes car{
+    100% {
+        transform: translateY(-1px)
+    }
+    50% {
+        transform: translateY(1px)
+    }
+    0% {
+        transform: translateY(-1px)
+    }
+}
+/* .car {
+  
+} */
+/* .wheel {
+    position: absolute;
+} */
+.wheel {
+    position: absolute;
+    left: 50%;
+}
+.wheel img {
+    width: 80px;
+    height: 80px;
+    animation: wheel 1s linear infinite;
+}
+
+@keyframes wheel {
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+.backwheel {
+    left: -214px;
+    bottom: 22px;
+    position: absolute;
+}
+.frontwheel {
+    left: 117px;
+    bottom: 22px;
+    position: absolute;
+}
+
+
+/* trip-card */
+.trips-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #fff;
+    transition: 500ms;
+}
+
+.trips-card:hover {
+    background-color: rgba(236, 236, 236, 1);
+}
+
+.trips-card .text-card {
+    margin: 0 0 6px 10px;
+}
+
+.driver-image-show {
+    border: 4px solid white;
+    box-shadow: 0px 0px 4px 4px rgba(243, 239, 239, 1)
+}
+
+
+/* current trip layout */
+.current-tripp {
+    position: fixed;
+    top: 150px;
+    left: 0;
+    width: 50px;
+    height: 35px;
+    z-index: 1000;
+    background-color: #61616170;
+    display: flex;
+    align-items: center;
+    transition: 300ms;
+    cursor: pointer;
+}
+
+.current-tripp:hover {
+    width: 200px;
+}
+.current-tripp:hover .current-tripp-text {
+    transition-delay: 200ms;
+    visibility: visible;
+}
+.current-tripp .current-tripp-text {
+    margin-bottom: 0 !important;
+    padding-left: 5px !important;
+    visibility: hidden;
+}
+

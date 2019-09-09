@@ -28,7 +28,7 @@ class authRegister extends Component {
   render() {
     const {email, fullName, passWord, passWord2, phone, DOB} = this.props.errors
     return (
-      <div className="container py-5">
+      <div className="container py-5" style={{marginTop: 60}} >
         <Form onSubmit={this.handleOnSubmit}>
           <p className="h1 mx-auto">Đăng Ký</p>
           <FormGroup row>

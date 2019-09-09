@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     numberOfTrips: {type: Number, default: 0},
     avatar: {type: String},
     history: [],
+    currentTrip: [],
     onTheTrip : {type: Boolean, default: false}
 })
 
