@@ -73,3 +73,19 @@ export const cancelTrip = (tripId, cb) => {
             })
   }
 }
+
+export const bookTrip = (tripId, data, cb) => {
+  return dispatch => {
+    axios.post(`http://localhost:8080/api/trips/booktrip/${tripId}`, data)
+          .then(res => {
+            swal("Success!", "You was  booking the trip", 'success').then(suc => {
+              cb()
+              window.location.reload();
+            }) 
+          })
+          .catch(err => {
+            console.log(err.response.data.error.numberOfBookingSeats)
+            return swal("Failed!", `${err.response.data.error.numberOfBookingSeats || err.response.data.error}`, "warning")
+          })
+  }
+}

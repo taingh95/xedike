@@ -10,7 +10,7 @@ module.exports.authentication = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(400).json({ error: "Token is invalid" });
+    res.status(400).json({ error: "You need log in to continue" });
   }
 };
 

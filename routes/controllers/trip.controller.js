@@ -4,7 +4,7 @@ const { User } = require("../../models/user.model");
 
 //validator
 const tripValidate = require("../../validation/validate-trip");
-
+const bookTripValidation = require("../../validation/validate-booktrip")
 //get all trips
 module.exports.getTrips = async (req, res) => {
   let perPage = 4;
@@ -139,6 +139,8 @@ module.exports.bookTrip = (req, res) => {
   const tripId = req.params.tripId;
   const { numberOfBookingSeats } = req.body;
   const passengerId = req.user.payload._id;
+  const {error ,isValid} = bookTripValidation.bookTripValidate({numberOfBookingSeats})
+  if (!isValid) return res.status(400).json({ error });
   Promise.all([Trip.findById(tripId), User.findById(passengerId)])
     .then(results => {
       const trip = results[0];
@@ -146,7 +148,7 @@ module.exports.bookTrip = (req, res) => {
       if (!passenger) return Promise.reject({ error: "Passenger not found" });
       if (!trip) return Promise.reject({ error: "Trip not found" });
       if (passenger.currentTrip.length > 0)
-        return Promise.reject({ error: "You were on the trip" });
+        return Promise.reject({ error: "You were on another the trip" });
       if (numberOfBookingSeats > trip.availableSeats)
         return Promise.reject({ error: "Your booking is over limitation" });
       if (trip.isFinish === true)
