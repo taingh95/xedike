@@ -11,7 +11,7 @@ export const getErrorsTrip = err => {
   };
 
 
-
+//driver
 export const createTrip = (data,cb) => {
   return dispatch => {
     axios
@@ -19,6 +19,7 @@ export const createTrip = (data,cb) => {
       .then(res => {
         swal("Congratulation!", "You were created your trip!", "success").then(success => {
             cb();
+            window.location.reload()
         })
         dispatch(getErrorsTrip({}))
       })
@@ -31,3 +32,44 @@ export const createTrip = (data,cb) => {
     });
   };
 };
+
+export const deleteTrip = (tripId, cb) => {
+  return dispatch => {
+    axios.delete(`http://localhost:8080/api/trips/${tripId}`)
+         .then(res => {
+           swal("Success!", "Your trip was deleted!", 'success').then(suc => {
+             cb();
+             window.location.reload();
+           })
+         })
+  }
+}
+
+export const finishTrip = (tripId, cb) => {
+  return dispatch => {
+    axios.patch(`http://localhost:8080/api/trips/finish/${tripId}`)
+          .then(res => {
+            swal("Success!", "Your trip was finish!", 'success').then(suc => {
+              cb();
+              window.location.reload();
+            })
+          })
+  }
+}
+
+
+
+
+
+//passenger
+export const cancelTrip = (tripId, cb) => {
+  return dispatch => {
+      axios.get(`http://localhost:8080/api/trips/booktrip/${tripId}`)
+            .then(res => {
+              swal("Success!", "You was cancel booking the trip", 'success').then(suc => {
+                cb();
+                window.location.reload();
+              }) 
+            })
+  }
+}

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {carSchema} = require('./car.model')
-const {TripSchema} = require('./trip.model')
+
 
 const driverSchema = new mongoose.Schema({
     userId : {
@@ -8,8 +8,6 @@ const driverSchema = new mongoose.Schema({
         ref: "User",
         unique: true
     },
-    currentTrip: []
-    ,
     address: {type: String, required: true},
     passportId: {type: String, required: true},
     mainJob: {type: String, required: true},
@@ -17,7 +15,6 @@ const driverSchema = new mongoose.Schema({
     carInfo: [{
         type: carSchema
     }],
-    onTheTrip : {type: Boolean, default: false},
     isActive: false,
     tripSuccess: {type: Number, default: 0}
 })

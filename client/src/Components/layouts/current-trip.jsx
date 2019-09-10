@@ -2,13 +2,16 @@ import React, { Component, Fragment } from "react";
 import { DirectionsCar } from "@material-ui/icons";
 import CurrentTripModal from "./current-trip-modal";
 import { connect } from "react-redux";
+import axios from "axios";
 
 class CurrentTrip extends Component {
   constructor(props) {
     super(props);
     this.state = {
       toggleModal: false,
-      currentTrip: 0
+      currentTrip: [],
+      position: "",
+      tripId: ""
     };
   }
 
@@ -21,6 +24,21 @@ class CurrentTrip extends Component {
     });
   };
 
+  componentDidMount() {
+    if(this.props.auth.user.currentTrip.length > 0) {
+      axios.get(`http://localhost:8080/api/trips/${this.props.auth.user.currentTrip[0].tripId}`)
+          .then(res => {
+            this.setState({
+              currentTrip: res.data,
+              position: this.props.auth.user.currentTrip[0].position,
+              tripId: this.props.auth.user.currentTrip[0].tripId
+            })
+          })
+          .catch(err => console.log(err))
+    } 
+    
+  }
+
   render() {
     return (
       <Fragment>
@@ -31,7 +49,9 @@ class CurrentTrip extends Component {
         <CurrentTripModal
           toggleModal={this.state.toggleModal}
           handleOnToggleModal={this.handleOnClick}
-          tripDriver={this.props.driverInfo.driver.currentTrip}
+          currentTrip={this.state.currentTrip}
+          position={this.state.position}
+          tripId={this.state.tripId}
         />
       </Fragment>
     );
@@ -40,7 +60,6 @@ class CurrentTrip extends Component {
 
 const mapStateToProps = state => {
   return {
-    driverInfo: state.driver,
     auth: state.auth
   };
 };

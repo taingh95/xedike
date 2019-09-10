@@ -18,35 +18,40 @@ router.post(
 );
 
 //update trip
-router.post(
-  "/update-trip/:tripId",
+router.patch(
+  "/:tripId",
   authMiddleware.authentication,
   authMiddleware.authorization("driver"),
   tripController.updateTrip
 );
 //delete trip
-router.post(
-  "/delete-trip/:tripId",
+router.delete(
+  "/:tripId",
   authMiddleware.authentication,
   authMiddleware.authorization("driver"),
   tripController.deleteTrip
 );
-//search trip
-router.get("/filter", tripController.filterTrip)
+//finish trip
+router.patch(
+  "/finish/:tripId",
+  authMiddleware.authentication,
+  authMiddleware.authorization("driver"),
+  tripController.finishTrip
+);
 
 // ============= booking trip ===============
+//booktrip
 router.post(
   "/booktrip/:tripId",
   authMiddleware.authentication,
-  authMiddleware.authorization("passenger"),
   tripController.bookTrip
 );
-
-router.post(
-  "/cancel-book-trip/:tripId",
+//cancel
+router.get(
+  "/booktrip/:tripId",
   authMiddleware.authentication,
-  authMiddleware.authorization("passenger"),
   tripController.cancelBookTrip
 );
+
 
 module.exports = router;

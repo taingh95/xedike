@@ -8,70 +8,82 @@ import {
   Table,
   Badge
 } from "reactstrap";
-import axios from "axios";
 import moment from "moment";
+import swal from "sweetalert";
+import {connect} from 'react-redux'
+
+import {deleteTrip, finishTrip, cancelTrip} from '../../actions/trips'
 
 class CurrentTripModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tripId: "",
-      locationFrom: "",
-      locationTo: "",
-      fee: "",
-      availableSeats: "",
-      startTime: "",
-      isHaveTrip: Boolean
+      currentTrip: {
+        locationFrom: "",
+        locationTo: "",
+        fee: "",
+        availableSeats: "",
+        startTime: ""
+      },
+      isHaveTrip: false,
+      position: ""
     };
   }
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.tripDriver !== this.props.tripDriver) {
-      this.setState(
-        {
-          tripId: this.props.tripDriver
-        },
-        () => {
-          return axios
-            .get(`http://localhost:8080/api/trips/${this.state.tripId}`)
-            .then(res => {
-              const formatedDate = moment(
-                res.data.startTime,
-                "YYYY-MM-DD"
-              ).format("YYYY-MM-DD");
-              this.setState({
-                isHaveTrip: true,
-                locationFrom: res.data.locationFrom,
-                locationTo: res.data.locationTo,
-                fee: res.data.fee,
-                availableSeats: res.data.availableSeats,
-                startTime: formatedDate
-              });
-            })
-            .catch(err => {
-              this.setState({
-                isHaveTrip: false
-              });
-            });
-        }
-      );
+    if (prevProps.currentTrip !== this.props.currentTrip) {
+      this.setState({
+        currentTrip: this.props.currentTrip,
+        position: this.props.position,
+        isHaveTrip: true
+      })
     }
   }
 
+  driverActionCancelTrip = () => {
+    swal('Delete this trip', {
+      title: "Are you sure?",
+      buttons: true,
+      icon: "warning"
+    }).then(confirm => {
+      (confirm) ? this.props.actionDriverDeleteTrip(this.props.tripId, this.props.handleOnToggleModal) : swal.close()
+    }).catch(err => console.log(err))
+  }
+
+  driverActionFinishTrip = () => {
+    swal('Finish your trip', {
+      title: "Are you sure?",
+      buttons: true,
+      icon: "warning"
+    }).then(confirm => {
+      (confirm) ? this.props.actionDriverFinishTrip(this.props.tripId, this.props.handleOnToggleModal) : swal.close()
+    }).catch(err => console.log(err))
+  }
+
+  passengerActionCancelTrip = () => {
+    swal('Cancel your trip', {
+      title: "Are you sure?",
+      buttons: true,
+      icon: "warning"
+    }).then(confirm => {
+      (confirm) ? this.props.actionPassCancelTrip(this.props.tripId, this.props.handleOnToggleModal) : swal.close()
+    }).catch(err => console.log(err))
+  }
+
+
   render() {
     const {
-      locationFrom,
-      locationTo,
-      fee,
-      availableSeats,
-      startTime,
-      isHaveTrip
+      currentTrip,
+      isHaveTrip,
+      position
     } = this.state;
-
+    const formatStartTime = moment(currentTrip.startTime, "YYYY-MM-DD").format(
+      "YYYY-MM-DD"
+    );
     const modalBodyHadTrip = (
       <ModalBody>
-          <span>User type: </span> 
+        <span>User type: </span>
         <Badge color="success" className="ml-2 mb-2">
-          Driver
+          {position}
         </Badge>
         <Table responsive>
           <thead>
@@ -85,11 +97,11 @@ class CurrentTripModal extends Component {
           </thead>
           <tbody>
             <tr>
-              <td>{locationFrom}</td>
-              <td>{locationTo}</td>
-              <td>{availableSeats}</td>
-              <td>{startTime}</td>
-              <td>{fee} $</td>
+              <td>{currentTrip.locationFrom}</td>
+              <td>{currentTrip.locationTo}</td>
+              <td>{currentTrip.availableSeats}</td>
+              <td>{formatStartTime}</td>
+              <td>{currentTrip.fee} $</td>
             </tr>
           </tbody>
         </Table>
@@ -102,15 +114,35 @@ class CurrentTripModal extends Component {
       </ModalBody>
     );
 
-    const modalFooterHadTrip = (
+    const modalFooterDriver = (
       <ModalFooter>
-        <Button color="danger">Cancel Trip</Button>{" "}
-        <Button color="primary">Finish</Button>{" "}
+        <Button 
+        color="danger"
+        onClick={this.driverActionCancelTrip}
+        >Delete Trip</Button>{" "}
+        <Button 
+        color="primary"
+        onClick={this.driverActionFinishTrip}
+        >
+        Finish
+        </Button>{" "}
         <Button color="secondary" onClick={this.props.handleOnToggleModal}>
           Close
         </Button>
       </ModalFooter>
     );
+    const modalFooterPass = (
+      <ModalFooter>
+        <Button 
+        color="danger"
+        onClick={this.passengerActionCancelTrip}
+        >Cancel Trip</Button>{" "}
+        <Button color="secondary" onClick={this.props.handleOnToggleModal}>
+          Close
+        </Button>
+      </ModalFooter>
+    )  
+
 
     const modalFooterNotHadTrip = (
       <ModalFooter>
@@ -130,10 +162,18 @@ class CurrentTripModal extends Component {
       >
         <ModalHeader toggle={this.toggle}>Your Current Trip</ModalHeader>
         {isHaveTrip ? modalBodyHadTrip : modalBodyHadNotTrip}
-        {isHaveTrip ? modalFooterHadTrip : modalFooterNotHadTrip}
+        {!isHaveTrip ? modalFooterNotHadTrip : (position == "driver") ? modalFooterDriver : modalFooterPass}
       </Modal>
     );
   }
 }
 
-export default CurrentTripModal;
+const mapDispatchToProps = dispatch => {
+  return {
+    actionDriverDeleteTrip: (tripId, cb) => dispatch(deleteTrip(tripId, cb)),
+    actionDriverFinishTrip: (tripId, cb) => dispatch(finishTrip(tripId, cb)),
+    actionPassCancelTrip: (tripId, cb) => dispatch(cancelTrip(tripId, cb))
+  }
+}
+
+export default connect(null,mapDispatchToProps)(CurrentTripModal);

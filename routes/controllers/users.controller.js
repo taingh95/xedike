@@ -163,7 +163,6 @@ module.exports.deactiveAccount = (req, res) => {
 
 //Become a driver
 module.exports.becomeDriver = (req, res) => {
-  console.log(JSON.stringify(req.user.payload.userType));
   User.findById(req.user.payload._id)
     .then(user => {
       if (!user) return Promise.reject({ errors: " User does not exists" });
